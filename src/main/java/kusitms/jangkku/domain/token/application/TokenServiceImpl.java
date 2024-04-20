@@ -21,6 +21,7 @@ public class TokenServiceImpl implements TokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
+
     @Override
     public TokenResponse reissueAccessToken(String authorizationHeader) {
         String refreshToken = jwtUtil.getTokenFromHeader(authorizationHeader);
@@ -30,7 +31,6 @@ public class TokenServiceImpl implements TokenService {
 
         if (!existRefreshToken.getToken().equals(refreshToken) || jwtUtil.isTokenExpired(refreshToken)) {
             // 리프레쉬 토큰이 다르거나, 만료된 경우
-            refreshTokenRepository.delete(existRefreshToken);
             throw new TokenException(TokenErrorResult.INVALID_REFRESH_TOKEN); // 401 에러를 던져 재로그인을 요청
         } else {
             // 액세스 토큰 재발급
