@@ -1,5 +1,7 @@
 package kusitms.jangkku.domain.token.api;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import kusitms.jangkku.domain.token.application.TokenService;
 import kusitms.jangkku.domain.token.dto.response.TokenResponse;
 import kusitms.jangkku.global.common.ApiResponse;
@@ -8,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,9 +22,10 @@ public class TokenController {
     // 액세스 토큰을 재발행하는 API
     @GetMapping("/reissue/access-token")
     public ResponseEntity<ApiResponse<Object>> reissueAccessToken(
-            @RequestHeader("Authorization") String authorizationHeader) {
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
-        TokenResponse accessToken = authService.reissueAccessToken(authorizationHeader);
+        TokenResponse accessToken = authService.reissueAccessToken(request, response);
         return ApiResponse.onSuccess(SuccessStatus._CREATED_ACCESS_TOKEN, accessToken);
     }
 }
