@@ -1,5 +1,6 @@
 package kusitms.jangkku.global.auth.application;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
@@ -10,6 +11,7 @@ import kusitms.jangkku.global.auth.dto.GoogleUserInfo;
 import kusitms.jangkku.global.auth.dto.KakaoUserInfo;
 import kusitms.jangkku.global.auth.dto.NaverUserInfo;
 import kusitms.jangkku.global.auth.dto.OAuth2UserInfo;
+import kusitms.jangkku.global.util.CookieUtil;
 import kusitms.jangkku.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
     private OAuth2UserInfo oAuth2UserInfo = null;
 
     private final JwtUtil jwtUtil;
+    private final CookieUtil cookieUtil;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -93,12 +96,14 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         log.info("PROVIDER : {}", provider);
         log.info("PROVIDER_ID : {}", providerId);
 
-        // 리프레쉬 토큰 발급 후 저장
-        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
+        // 리프레쉬 토큰이 담긴 쿠키 생성 후 설정
+        Cookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
+        response.addCookie(cookie);
 
+        // 새로운 리프레쉬 토큰 DB 저장
         RefreshToken newRefreshToken = RefreshToken.builder()
                                         .userId(user.getUserId())
-                                        .token(refreshToken)
+                                        .token(cookie.getValue())
                                         .build();
         refreshTokenRepository.save(newRefreshToken);
 
@@ -107,7 +112,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         // 이름, 액세스 토큰, 리프레쉬 토큰을 담아 리다이렉트
         String encodedName = URLEncoder.encode(name, "UTF-8");
-        String redirectUri = String.format(REDIRECT_URI, encodedName, accessToken, refreshToken);
+        String redirectUri = String.format(REDIRECT_URI, encodedName, accessToken);
         getRedirectStrategy().sendRedirect(request, response, redirectUri);
     }
 }
