@@ -21,11 +21,11 @@ public class TokenController {
 
     // 액세스 토큰을 재발행하는 API
     @GetMapping("/reissue/access-token")
-    public ResponseEntity<ApiResponse<Object>> reissueAccessToken(
+    public ResponseEntity<ApiResponse<TokenResponse>> reissueAccessToken(
             HttpServletRequest request,
             HttpServletResponse response) {
 
         TokenResponse accessToken = authService.reissueAccessToken(request, response);
-        return ApiResponse.onSuccess(SuccessStatus._CREATED_ACCESS_TOKEN, accessToken);
+        return ApiResponse.onSuccess(SuccessStatus.CREATED_ACCESS_TOKEN, accessToken);
     }
 }

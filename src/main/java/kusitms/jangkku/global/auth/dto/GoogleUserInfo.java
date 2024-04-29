@@ -1,5 +1,6 @@
 package kusitms.jangkku.global.auth.dto;
 
+import kusitms.jangkku.global.common.constant.Provider;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
@@ -16,7 +17,7 @@ public class GoogleUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getProvider() {
-        return "google";
+        return Provider.GOOGLE_PROVIDER.getProvider();
     }
 
     @Override

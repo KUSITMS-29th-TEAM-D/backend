@@ -1,5 +1,6 @@
 package kusitms.jangkku.global.auth.dto;
 
+import kusitms.jangkku.global.common.constant.Provider;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
@@ -16,7 +17,7 @@ public class NaverUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getProvider() {
-        return "naver";
+        return Provider.NAVER_PROVIDER.getProvider();
     }
 
     @Override
