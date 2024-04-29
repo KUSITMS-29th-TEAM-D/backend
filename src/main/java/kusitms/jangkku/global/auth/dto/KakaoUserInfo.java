@@ -1,5 +1,6 @@
 package kusitms.jangkku.global.auth.dto;
 
+import kusitms.jangkku.global.common.constant.Provider;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public class KakaoUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getProvider() {
-        return "kakao";
+        return Provider.KAKAO_PROVIDER.getProvider();
     }
 
     @Override
