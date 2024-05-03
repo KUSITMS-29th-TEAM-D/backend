@@ -52,7 +52,7 @@ jobs:
 
       - name: 🧁 NCP Container Registry에 로그인 후, docker image build 후 NCP Container Registry에 push합니다.
         run: |
-          docker login -u ${{ secrets.NCP_API_ACCESS_KEY }} -p ${{ secrets.NCP_API_ACCESS_KEY }} ${{secrets.NCP_CONTAINER_REGISTRY_PUBLIC_ENDPOINT}}
+          docker login -u ${{ secrets.NCP_API_ACCESS_KEY }} -p ${{ secrets.NCP_API_SECRET_KEY }} ${{secrets.NCP_CONTAINER_REGISTRY_PUBLIC_ENDPOINT}}
           docker build -f Dockerfile -t ${{ secrets.NCP_CONTAINER_REGISTRY_PUBLIC_ENDPOINT }}/${{ secrets.NCP_CONTAINER_REGISTRY_IMAGE }} .
           docker push ${{ secrets.NCP_CONTAINER_REGISTRY_PUBLIC_ENDPOINT }}/${{ secrets.NCP_CONTAINER_REGISTRY_IMAGE }}
 
