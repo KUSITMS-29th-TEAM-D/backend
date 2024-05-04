@@ -91,6 +91,12 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    // 닉네임 중복 여부를 판단하는 메서드
+    @Override
+    public boolean isDuplicate(String nickname) {
+        return userRepository.findByNickname(nickname) != null;
+    }
+
     // 사용자의 관심 분야를 저장하는 메서드
     private void saveUserInterests(User user, List<UserDto.Interest> interestList) {
         if (interestList != null && !interestList.isEmpty()) {
