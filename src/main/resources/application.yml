@@ -73,7 +73,9 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
-  redirect: ${JWT_REDIRECT_URI}
+  redirect:
+    access: ${ACCESS_TOKEN_REDIRECT_URI}
+    register: ${REGISTER_TOKEN_REDIRECT_URI}
   access-token:
     expiration-time: ${ACCESS_TOKEN_EXPIRATION_TIME}
   refresh-token:

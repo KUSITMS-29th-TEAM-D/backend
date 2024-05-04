@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum UserErrorResult implements BaseErrorCode {
-    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404", "존재하지 않는 유저입니다.");
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404", "존재하지 않는 유저입니다."),
+    IS_DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "409", "중복된 닉네임이 존재합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
