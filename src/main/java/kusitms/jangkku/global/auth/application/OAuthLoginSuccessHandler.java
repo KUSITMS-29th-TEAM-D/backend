@@ -25,14 +25,16 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    @Value("${jwt.redirect}")
-    private String REDIRECT_URI; // 프론트엔드로 Jwt 토큰을 리다이렉트할 URI
+    @Value("${jwt.redirect.access}")
+    private String ACCESS_TOKEN_REDIRECT_URI; // 기존 유저 로그인 시 리다이렉트 URI
+
+    @Value("${jwt.redirect.register}")
+    private String REGISTER_TOKEN_REDIRECT_URI; // 신규 유저 로그인 시 리다이렉트 URI
 
     @Value("${jwt.access-token.expiration-time}")
     private long ACCESS_TOKEN_EXPIRATION_TIME; // 액세스 토큰 유효기간
@@ -77,39 +79,39 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         if (existUser == null) {
             // 신규 유저인 경우
-            log.info("신규 유저입니다. 등록을 진행합니다.");
+            log.info("신규 유저입니다.");
 
-            user = User.builder()
-                    .userId(UUID.randomUUID())
-                    .name(name)
-                    .provider(provider)
-                    .providerId(providerId)
-                    .build();
-            userRepository.save(user);
+            // 레지스터 토큰 발급
+            String registerToken = jwtUtil.generateRegisterToken(provider, providerId, name, ACCESS_TOKEN_EXPIRATION_TIME);
+
+            // 레지스터 토큰을 담아 리다이렉트
+            String redirectUri = String.format(REGISTER_TOKEN_REDIRECT_URI, registerToken);
+            getRedirectStrategy().sendRedirect(request, response, redirectUri);
+
         } else {
             // 기존 유저인 경우
             log.info("기존 유저입니다.");
             user = existUser;
+
+            // 리프레쉬 토큰이 담긴 쿠키 생성 후 설정
+            Cookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
+            response.addCookie(cookie);
+
+            // 새로운 리프레쉬 토큰 Redis 저장
+            RefreshToken newRefreshToken = new RefreshToken(user.getUserId(), cookie.getValue());
+            refreshTokenRepository.save(newRefreshToken);
+
+            // 액세스 토큰 발급
+            String accessToken = jwtUtil.generateAccessToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION_TIME);
+
+            // 닉네임, 액세스 토큰을 담아 리다이렉트
+            String encodedName = URLEncoder.encode(user.getNickname(), StandardCharsets.UTF_8);
+            String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, encodedName, accessToken);
+            getRedirectStrategy().sendRedirect(request, response, redirectUri);
         }
 
         log.info("유저 이름 : {}", name);
         log.info("PROVIDER : {}", provider);
         log.info("PROVIDER_ID : {}", providerId);
-
-        // 리프레쉬 토큰이 담긴 쿠키 생성 후 설정
-        Cookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
-        response.addCookie(cookie);
-
-        // 새로운 리프레쉬 토큰 Redis 저장
-        RefreshToken newRefreshToken = new RefreshToken(user.getUserId(), cookie.getValue());
-        refreshTokenRepository.save(newRefreshToken);
-
-        // 액세스 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION_TIME);
-
-        // 이름, 액세스 토큰을 담아 리다이렉트
-        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
-        String redirectUri = String.format(REDIRECT_URI, encodedName, accessToken);
-        getRedirectStrategy().sendRedirect(request, response, redirectUri);
     }
 }
