@@ -30,6 +30,18 @@ public class User {
     @Column(name = "provider_id", nullable = false, length = 50)
     private String providerId;
 
+    @Column(name = "nickname", nullable = false, length = 10)
+    private String nickname;
+
+    @Column(name = "job", nullable = false, length = 10)
+    private String job;
+
+    @Column(name = "understanding_score", nullable = false, length = 10)
+    private int understandingScore;
+
+    @Column(name = "profile_img_url", length = 50)
+    private String profileImgUrl;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, length = 20)
     private LocalDateTime createdAt;
@@ -39,10 +51,14 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Builder
-    public User(UUID userId, String name, String provider, String providerId) {
+    public User(UUID userId, String name, String provider, String providerId, String nickname, String job, int understandingScore, String profileImgUrl) {
         this.userId = userId;
         this.name = name;
         this.provider = provider;
         this.providerId = providerId;
+        this.nickname = nickname;
+        this.job = job;
+        this.understandingScore = understandingScore;
+        this.profileImgUrl = profileImgUrl;
     }
 }
