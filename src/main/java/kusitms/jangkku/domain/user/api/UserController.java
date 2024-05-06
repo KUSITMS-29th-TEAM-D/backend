@@ -28,9 +28,9 @@ public class UserController {
     }
 
     // 닉네임 중복 여부를 반환하는 API
-    @GetMapping("/check-nickname")
+    @GetMapping("/check-nickname/{nickname}")
     public ResponseEntity<ApiResponse<Object>> checkNickname(
-            @RequestParam("nickname") String nickname) {
+            @PathVariable("nickname") String nickname) {
 
         if (!userService.isDuplicate(nickname)) {
             return ApiResponse.onSuccess(SuccessStatus.IS_NICKNAME_POSSIBLE);
