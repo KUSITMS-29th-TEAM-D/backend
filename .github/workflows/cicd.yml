@@ -39,11 +39,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: 🧁 application.yml 파일을 생성 합니다.
-        run: |
-          touch ./src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml # github actions에서 설정한 값을 application.yml 파일에 쓰기
-
       - name: 🧁 gradle build를 위한 권한을 부여합니다.
         run: chmod +x gradlew
 
