@@ -58,7 +58,6 @@ jobs:
           host: ${{ secrets.NCP_SERVER_HOST }}
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           script: |
-            sudo docker pull ${{ secrets.NCP_CONTAINER_REGISTRY_PUBLIC_ENDPOINT }}/${{ secrets.NCP_CONTAINER_REGISTRY_IMAGE }}
             chmod 777 ./deploy.sh
             ./deploy.sh
             docker image prune -f
