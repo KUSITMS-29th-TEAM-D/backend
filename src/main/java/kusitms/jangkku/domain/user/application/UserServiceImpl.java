@@ -98,11 +98,11 @@ public class UserServiceImpl implements UserService {
     }
 
     // 사용자의 관심 분야를 저장하는 메서드
-    private void saveUserInterests(User user, List<UserDto.Interest> interestList) {
+    private void saveUserInterests(User user, List<String> interestList) {
         if (interestList != null && !interestList.isEmpty()) {
-            for (UserDto.Interest interestDto : interestList) {
+            for (String interestName : interestList) {
                 // 관심 분야 이름으로 관심 분야 엔티티를 찾음
-                Interest interest = interestRepository.findByName(interestDto.getName());
+                Interest interest = interestRepository.findByName(interestName);
                 if (interest != null) {
                     UserInterest userInterest = UserInterest.builder()
                             .user(user)
@@ -115,11 +115,11 @@ public class UserServiceImpl implements UserService {
     }
 
     // 사용자의 키워드를 저장하는 메서드
-    private void saveUserKeywords(User user, List<UserDto.Keyword> keywordList) {
+    private void saveUserKeywords(User user, List<String> keywordList) {
         if (keywordList != null && !keywordList.isEmpty()) {
-            for (UserDto.Keyword keywordDto : keywordList) {
+            for (String keywordName : keywordList) {
                 // 키워드 이름으로 키워드 엔티티를 찾음
-                Keyword keyword = keywordRepository.findByName(keywordDto.getName());
+                Keyword keyword = keywordRepository.findByName(keywordName);
                 if (keyword != null) {
                     UserKeyword userKeyword = UserKeyword.builder()
                             .user(user)
