@@ -19,7 +19,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie(COOKIE_NAME, cookieValue);
         // 쿠키 속성 설정
         cookie.setHttpOnly(true); // httponly 옵션 설정
-        cookie.setSecure(true);   // https 옵션 설정
+        //cookie.setSecure(true);   // https 옵션 설정
         cookie.setPath("/");      // 모든 곳에서 쿠키열람이 가능하도록 설정
         cookie.setMaxAge((int) expirationMillis); // 쿠키 만료시간 설정
         return cookie;
