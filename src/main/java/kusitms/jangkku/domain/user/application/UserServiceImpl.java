@@ -20,6 +20,7 @@ import kusitms.jangkku.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,8 +75,8 @@ public class UserServiceImpl implements UserService {
         saveUserKeywords(user, userRegisterRequest.getKeywordList());
 
         // 리프레쉬 토큰이 담긴 쿠키 생성 후 설정
-        Cookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
-        response.addCookie(cookie);
+        ResponseCookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
+        response.addHeader("Set-Cookie", cookie.toString());
 
         // 새로운 리프레쉬 토큰 Redis 저장
         RefreshToken newRefreshToken = new RefreshToken(user.getUserId(), cookie.getValue());
