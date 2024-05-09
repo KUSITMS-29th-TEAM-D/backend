@@ -2,6 +2,8 @@ package kusitms.jangkku.global.auth.application;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kusitms.jangkku.domain.persona.dao.DefinePersonaRepository;
+import kusitms.jangkku.domain.persona.domain.DefinePersona;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
 import kusitms.jangkku.domain.token.domain.RefreshToken;
 import kusitms.jangkku.domain.user.dao.UserRepository;
@@ -47,6 +49,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
     private final JwtUtil jwtUtil;
     private final CookieUtil cookieUtil;
     private final UserRepository userRepository;
+    private final DefinePersonaRepository definePersonaRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
@@ -104,9 +107,11 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             // 액세스 토큰 발급
             String accessToken = jwtUtil.generateAccessToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION_TIME);
 
-            // 닉네임, 액세스 토큰을 담아 리다이렉트
+            // 닉네임, 테스트 여부, 액세스 토큰을 담아 리다이렉트
+            DefinePersona definePersona = definePersonaRepository.findByUser(user);
+            String isTest = definePersona != null ? "T" : "F";
             String encodedName = URLEncoder.encode(user.getNickname(), StandardCharsets.UTF_8);
-            String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, encodedName, accessToken);
+            String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, encodedName, isTest, accessToken);
             getRedirectStrategy().sendRedirect(request, response, redirectUri);
         }
 
