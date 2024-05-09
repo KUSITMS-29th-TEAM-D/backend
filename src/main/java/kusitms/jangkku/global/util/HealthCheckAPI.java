@@ -1,4 +1,4 @@
-package kusitms.jangkku.domain;
+package kusitms.jangkku.global.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
