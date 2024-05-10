@@ -55,8 +55,9 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           username: ${{ secrets.NCP_SERVER_USERNAME }}
-          host: ${{ secrets.NCP_SERVER_HOST }}
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
+          host: ${{ secrets.NCP_SERVER_HOST }}
+          port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
             chmod 777 ./deploy.sh
             ./deploy.sh
