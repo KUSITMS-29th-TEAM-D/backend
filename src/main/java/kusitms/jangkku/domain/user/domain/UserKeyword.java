@@ -1,7 +1,8 @@
-package kusitms.jangkku.domain.userinterest.domain;
+package kusitms.jangkku.domain.user.domain;
 
 import jakarta.persistence.*;
 import kusitms.jangkku.domain.interest.domain.Interest;
+import kusitms.jangkku.domain.keyword.domain.Keyword;
 import kusitms.jangkku.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,24 +12,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "users_interests")
-public class UserInterest {
+@Table(name = "users_keywords")
+public class UserKeyword {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "users_interests_id")
+    @Column(name = "users_keywords_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", foreignKey = @ForeignKey(name = "users_interests_fk_users_id"))
+    @JoinColumn(name = "users_id", foreignKey = @ForeignKey(name = "users_keywords_fk_users_id"))
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interests_id", foreignKey = @ForeignKey(name = "users_interests_fk_interests_id"))
-    private Interest interest;
+    @JoinColumn(name = "keywords_id", foreignKey = @ForeignKey(name = "users_keywords_fk_keywords_id"))
+    private Keyword keyword;
 
     @Builder
-    public UserInterest(User user, Interest interest) {
+    public UserKeyword(User user, Keyword keyword) {
         this.user = user;
-        this.interest = interest;
+        this.keyword = keyword;
     }
 }

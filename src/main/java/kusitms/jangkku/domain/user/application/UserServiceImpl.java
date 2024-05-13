@@ -1,6 +1,5 @@
 package kusitms.jangkku.domain.user.application;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import kusitms.jangkku.domain.interest.dao.InterestRepository;
 import kusitms.jangkku.domain.interest.domain.Interest;
@@ -11,15 +10,16 @@ import kusitms.jangkku.domain.token.domain.RefreshToken;
 import kusitms.jangkku.domain.user.dao.UserRepository;
 import kusitms.jangkku.domain.user.domain.User;
 import kusitms.jangkku.domain.user.dto.UserDto;
-import kusitms.jangkku.domain.userinterest.dao.UserInterestRepository;
-import kusitms.jangkku.domain.userinterest.domain.UserInterest;
-import kusitms.jangkku.domain.userkeyword.dao.UserKeywordRepository;
-import kusitms.jangkku.domain.userkeyword.domain.UserKeyword;
+import kusitms.jangkku.domain.user.dao.UserInterestRepository;
+import kusitms.jangkku.domain.user.domain.UserInterest;
+import kusitms.jangkku.domain.user.dao.UserKeywordRepository;
+import kusitms.jangkku.domain.user.domain.UserKeyword;
 import kusitms.jangkku.global.util.CookieUtil;
 import kusitms.jangkku.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,8 +74,8 @@ public class UserServiceImpl implements UserService {
         saveUserKeywords(user, userRegisterRequest.getKeywordList());
 
         // 리프레쉬 토큰이 담긴 쿠키 생성 후 설정
-        Cookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
-        response.addCookie(cookie);
+        ResponseCookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
+        response.addHeader("Set-Cookie", cookie.toString());
 
         // 새로운 리프레쉬 토큰 Redis 저장
         RefreshToken newRefreshToken = new RefreshToken(user.getUserId(), cookie.getValue());
