@@ -39,6 +39,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     //h2
     runtimeOnly 'com.h2database:h2'
+
+    //WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
