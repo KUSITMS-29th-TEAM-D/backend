@@ -2,6 +2,7 @@ package kusitms.jangkku.domain.persona.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,10 @@ public class DefinePersonaKeyword {
 
     @Column(name = "name", nullable = false, length = 20)
     private String name;
+
+    @Builder
+    public DefinePersonaKeyword(DefinePersona definePersona, String name) {
+        this.definePersona = definePersona;
+        this.name = name;
+    }
 }

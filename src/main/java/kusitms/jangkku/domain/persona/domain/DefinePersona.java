@@ -3,6 +3,7 @@ package kusitms.jangkku.domain.persona.domain;
 import jakarta.persistence.*;
 import kusitms.jangkku.domain.user.domain.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,4 +30,10 @@ public class DefinePersona {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, length = 20)
     private LocalDateTime createdAt;
+
+    @Builder
+    public DefinePersona(User user, String name) {
+        this.user = user;
+        this.name = name;
+    }
 }
