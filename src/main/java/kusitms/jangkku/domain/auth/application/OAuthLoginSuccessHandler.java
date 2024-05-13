@@ -1,17 +1,17 @@
-package kusitms.jangkku.global.auth.application;
+package kusitms.jangkku.domain.auth.application;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kusitms.jangkku.domain.auth.dto.GoogleUserInfo;
+import kusitms.jangkku.domain.auth.dto.OAuth2UserInfo;
 import kusitms.jangkku.domain.persona.dao.DefinePersonaRepository;
 import kusitms.jangkku.domain.persona.domain.DefinePersona;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
 import kusitms.jangkku.domain.token.domain.RefreshToken;
 import kusitms.jangkku.domain.user.dao.UserRepository;
 import kusitms.jangkku.domain.user.domain.User;
-import kusitms.jangkku.global.auth.dto.GoogleUserInfo;
-import kusitms.jangkku.global.auth.dto.KakaoUserInfo;
-import kusitms.jangkku.global.auth.dto.NaverUserInfo;
-import kusitms.jangkku.global.auth.dto.OAuth2UserInfo;
+import kusitms.jangkku.domain.auth.dto.KakaoUserInfo;
+import kusitms.jangkku.domain.auth.dto.NaverUserInfo;
 import kusitms.jangkku.global.util.CookieUtil;
 import kusitms.jangkku.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;

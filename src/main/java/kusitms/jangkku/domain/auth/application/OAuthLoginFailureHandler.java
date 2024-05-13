@@ -1,4 +1,4 @@
-package kusitms.jangkku.global.auth.application;
+package kusitms.jangkku.domain.auth.application;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

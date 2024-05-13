@@ -19,15 +19,12 @@ public class DefinePersona {
     @Column(name = "define_personas_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", foreignKey = @ForeignKey(name = "define_personas_fk_users_id"))
     private User user;
 
     @Column(name = "name", nullable = false, length = 20)
     private String name;
-
-    @Column(name = "img_url", nullable = false)
-    private String imgUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, length = 20)
