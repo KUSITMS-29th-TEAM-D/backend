@@ -1,6 +1,6 @@
 package kusitms.jangkku.domain.persona.constant;
 
-public enum DefinePersonaType {
+public enum Type {
     CREATOR("RIA", "크리에이터"),
     INSIGHTER("RIC", "인사이터"),
     INNOVATOR("REA", "이노베이터"),
@@ -14,7 +14,7 @@ public enum DefinePersonaType {
     private final String name;
 
 
-    DefinePersonaType(String code, String name) {
+    Type(String code, String name) {
         this.code = code;
         this.name = name;
     }

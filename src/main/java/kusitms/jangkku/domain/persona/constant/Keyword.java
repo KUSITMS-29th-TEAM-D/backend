@@ -3,7 +3,7 @@ package kusitms.jangkku.domain.persona.constant;
 import java.util.Arrays;
 import java.util.List;
 
-public enum DefinePersonaKeyword {
+public enum Keyword {
     REALISTIC(Arrays.asList(
             "남성적임",
             "솔직함",
@@ -64,7 +64,7 @@ public enum DefinePersonaKeyword {
 
     private final List<String> keywords;
 
-    DefinePersonaKeyword(List<String> keywords) {
+    Keyword(List<String> keywords) {
         this.keywords = keywords;
     }
 
