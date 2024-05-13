@@ -86,4 +86,5 @@ clova:
     url: ${CLOVA_API_URL}
     api-key: ${CLOVA_API_KEY}
     api-gateway-key: ${CLOVA_API_GATEWAY_KEY}
+    request-id: ${CLOVA_REQUEST_ID}
 
