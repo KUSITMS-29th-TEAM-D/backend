@@ -80,3 +80,10 @@ jwt:
     expiration-time: ${ACCESS_TOKEN_EXPIRATION_TIME}
   refresh-token:
     expiration-time: ${REFRESH_TOKEN_EXPIRATION_TIME}
+
+clova:
+  api:
+    url: ${CLOVA_API_URL}
+    api-key: ${CLOVA_API_KEY}
+    api-gateway-key: ${CLOVA_API_GATEWAY_KEY}
+
