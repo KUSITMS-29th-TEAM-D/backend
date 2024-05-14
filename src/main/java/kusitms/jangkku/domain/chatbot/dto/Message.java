@@ -10,7 +10,7 @@ public class Message {
     private String content;
 
     public enum ROLE {
-        SYSTEM,USER,ASSISTANT
+        system,user,assistant
     }
 
 }

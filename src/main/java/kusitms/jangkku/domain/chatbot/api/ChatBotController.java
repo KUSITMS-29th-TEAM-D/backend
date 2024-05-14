@@ -18,7 +18,7 @@ public class ChatBotController {
     private final ChatBotService chatBotService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> testChatBonController(@RequestBody ChatBotDto.ChatBotRequestDto chatBotRequestDto){
+    public ResponseEntity<ApiResponse<String>> testChatBotController(@RequestBody ChatBotDto.ChatBotRequestDto chatBotRequestDto){
         return ApiResponse.onSuccess(SuccessStatus._OK,chatBotService.requestChatBot(chatBotRequestDto)) ;
     }
 }
