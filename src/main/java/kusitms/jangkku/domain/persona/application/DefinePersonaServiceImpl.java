@@ -1,6 +1,7 @@
 package kusitms.jangkku.domain.persona.application;
 
 
+import kusitms.jangkku.domain.persona.constant.Content;
 import kusitms.jangkku.domain.persona.constant.Type;
 import kusitms.jangkku.domain.persona.constant.Keyword;
 import kusitms.jangkku.domain.persona.dao.DefinePersonaKeywordRepository;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     private final DefinePersonaRepository definePersonaRepository;
     private final DefinePersonaKeywordRepository definePersonaKeywordRepository;
 
+    // 정의하기 페르소나 결과를 도출하는 메서드
     @Override
     public DefinePersonaDto.DefinePersonaResponse getDefinePersona(String authorizationHeader, DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
         List<String> definePersonaKeywords = new ArrayList<>();
@@ -44,12 +47,10 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
             saveDefinePersona(authorizationHeader, definePersonaName, definePersonaKeywords);
         }
 
-        return DefinePersonaDto.DefinePersonaResponse.builder()
-                .definePersonaName(definePersonaName)
-                .definePersonaKeywords(definePersonaKeywords)
-                .build();
+        return createDefinePersonaResponse(definePersonaType, definePersonaKeywords);
     }
 
+    // 첫번째 유형 도출 메서드
     private String judgeStepOneType(List<String> stepOneKeywords, List<String> definePersonaKeywords) {
         List<String> realisticKeywords = Keyword.REALISTIC.getKeywords();
         List<String> socialKeywords = Keyword.SOCIAL.getKeywords();
@@ -61,6 +62,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         return realisticKeywords.contains(moreCountKeywords.get(0)) ? "R" : "S";
     }
 
+    // 두번째 유형 도출 메서드
     private String judgeStepTwoType(List<String> stepTwoKeywords, List<String> definePersonaKeywords) {
         List<String> investigativeKeywords = Keyword.INVESTIGATIVE.getKeywords();
         List<String> enterprisingKeywords = Keyword.ENTERPRISING.getKeywords();
@@ -72,6 +74,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         return investigativeKeywords.contains(moreCountKeywords.get(0)) ? "I" : "E";
     }
 
+    // 세번째 유형 도출 메서드
     private String judgeStepThreeType(List<String> stepThreeKeywords, List<String> definePersonaKeywords) {
         List<String> artisticKeywords = Keyword.ARTISTIC.getKeywords();
         List<String> conventionKeywords = Keyword.CONVENTION.getKeywords();
@@ -82,6 +85,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         return artisticKeywords.contains(moreCountKeywords.get(0)) ? "A" : "C";
     }
 
+    // 3가지 유형으로 페르소나를 판단하는 메서드
     private String judgeDefinePersonaName(String definePersonaType) {
 
         for (Type type : Type.values()) {
@@ -93,6 +97,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         throw new PersonaException(PersonaErrorResult.NOT_FOUND_PERSONA_TYPE);
     }
 
+    // 더 많이 선택한 키워드로 유형을 판단하는 메서드
     private List<String> judgeMoreCountKeywords (List<String> stepKeywords, List<String> firstKeywords, List<String> secondKeywords) {
         List<String> pickedFirstKeywords = new ArrayList<>();
         List<String> pickedSecondKeywords = new ArrayList<>();
@@ -108,6 +113,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         return pickedFirstKeywords.size() > pickedSecondKeywords.size() ? pickedFirstKeywords : pickedSecondKeywords;
     }
 
+    // 정의하기 페르소나를 저장하는 메서드
     private void saveDefinePersona(String authorizationHeader, String definePersonaName, List<String> definePersonaKeywords) {
         String token = jwtUtil.getTokenFromHeader(authorizationHeader);
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
@@ -127,5 +133,28 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
                     .build();
             definePersonaKeywordRepository.save(definePersonaKeyword);
         }
+    }
+
+    // 정의하기 페르소나 응답 객체를 만드는 메서드
+    private DefinePersonaDto.DefinePersonaResponse createDefinePersonaResponse(String definePersonaType, List<String> definePersonaKeywords) {
+        Content content = Arrays.stream(Content.values())
+                .filter(desc -> desc.getCode().equals(definePersonaType))
+                .findFirst()
+                .orElse(null);
+
+        if (content == null) {
+            throw new PersonaException(PersonaErrorResult.NOT_FOUND_PERSONA_TYPE);
+        }
+
+        return DefinePersonaDto.DefinePersonaResponse.builder()
+                .comment(content.getComment())
+                .description(content.getDescription())
+                .ability(content.getAbility())
+                .values(content.getValues())
+                .strength(content.getStrength())
+                .preference(content.getPreference())
+                .types(content.getTypes())
+                .definePersonaKeywords(definePersonaKeywords)
+                .build();
     }
 }
