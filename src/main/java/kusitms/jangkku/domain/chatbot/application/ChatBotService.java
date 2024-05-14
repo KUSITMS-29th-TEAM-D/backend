@@ -1,7 +1,6 @@
 package kusitms.jangkku.domain.chatbot.application;
 
 import kusitms.jangkku.domain.chatbot.dto.ChatBotDto;
-import kusitms.jangkku.domain.chatbot.dto.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
