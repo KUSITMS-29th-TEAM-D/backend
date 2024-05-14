@@ -1,4 +1,4 @@
-package kusitms.jangkku.global.common.constant;
+package kusitms.jangkku.domain.auth.constant;
 
 public enum Provider {
     GOOGLE_PROVIDER("google"),

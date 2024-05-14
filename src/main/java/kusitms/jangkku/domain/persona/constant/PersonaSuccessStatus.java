@@ -1,4 +1,4 @@
-package kusitms.jangkku.global.common.constant;
+package kusitms.jangkku.domain.persona.constant;
 
 import kusitms.jangkku.global.common.code.BaseCode;
 import kusitms.jangkku.global.common.dto.ReasonDto;
@@ -8,10 +8,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum SuccessStatus implements BaseCode {
-    // 전역 응답 코드
-    _OK(HttpStatus.OK, "200", "성공입니다."),
-    _CREATED(HttpStatus.CREATED, "201", "생성에 성공했습니다.");
+public enum PersonaSuccessStatus implements BaseCode {
+    // 정의하기 페르소나
+    CREATED_DEFINE_PERSONA(HttpStatus.CREATED, "201", "정의하기 페르소나 생성에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

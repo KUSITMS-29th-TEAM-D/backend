@@ -1,6 +1,6 @@
-package kusitms.jangkku.global.auth.dto;
+package kusitms.jangkku.domain.auth.dto;
 
-import kusitms.jangkku.global.common.constant.Provider;
+import kusitms.jangkku.domain.auth.constant.Provider;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;

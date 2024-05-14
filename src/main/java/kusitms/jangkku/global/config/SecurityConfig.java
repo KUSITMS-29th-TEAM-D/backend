@@ -1,7 +1,7 @@
 package kusitms.jangkku.global.config;
 
-import kusitms.jangkku.global.auth.application.OAuthLoginFailureHandler;
-import kusitms.jangkku.global.auth.application.OAuthLoginSuccessHandler;
+import kusitms.jangkku.domain.auth.application.OAuthLoginFailureHandler;
+import kusitms.jangkku.domain.auth.application.OAuthLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

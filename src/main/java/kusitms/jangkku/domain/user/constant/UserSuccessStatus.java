@@ -1,4 +1,4 @@
-package kusitms.jangkku.global.common.constant;
+package kusitms.jangkku.domain.user.constant;
 
 import kusitms.jangkku.global.common.code.BaseCode;
 import kusitms.jangkku.global.common.dto.ReasonDto;
@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum SuccessStatus implements BaseCode {
-    // 전역 응답 코드
-    _OK(HttpStatus.OK, "200", "성공입니다."),
-    _CREATED(HttpStatus.CREATED, "201", "생성에 성공했습니다.");
+public enum UserSuccessStatus implements BaseCode {
+    // 유저
+    SUCCESS_REGISTER_USER(HttpStatus.CREATED, "201", "유저 등록에 성공했습니다."),
+    IS_NICKNAME_POSSIBLE(HttpStatus.OK, "200", "사용할 수 있는 닉네임입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -3,6 +3,7 @@ package kusitms.jangkku.domain.token.api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kusitms.jangkku.domain.token.application.TokenService;
+import kusitms.jangkku.domain.token.constant.TokenSuccessStatus;
 import kusitms.jangkku.domain.token.dto.response.TokenResponse;
 import kusitms.jangkku.global.common.ApiResponse;
 import kusitms.jangkku.global.common.constant.SuccessStatus;
@@ -26,6 +27,6 @@ public class TokenController {
             HttpServletResponse response) {
 
         TokenResponse accessToken = authService.reissueAccessToken(request, response);
-        return ApiResponse.onSuccess(SuccessStatus.CREATED_ACCESS_TOKEN, accessToken);
+        return ApiResponse.onSuccess(TokenSuccessStatus.CREATED_ACCESS_TOKEN, accessToken);
     }
 }

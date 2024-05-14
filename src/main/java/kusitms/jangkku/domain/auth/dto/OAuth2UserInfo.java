@@ -1,4 +1,4 @@
-package kusitms.jangkku.global.auth.dto;
+package kusitms.jangkku.domain.auth.dto;
 
 public interface OAuth2UserInfo {
     String getProviderId();
