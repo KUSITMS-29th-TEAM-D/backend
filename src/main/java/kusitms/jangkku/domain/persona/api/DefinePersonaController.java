@@ -14,13 +14,24 @@ import org.springframework.web.bind.annotation.*;
 public class DefinePersonaController {
     private final DefinePersonaService definePersonaService;
 
-    // 현재 페르소나 결과를 반환하는 API
+    // 정의하기 페르소나를 생성하는 API
     @PostMapping("/define")
-    public ResponseEntity<ApiResponse<DefinePersonaDto.DefinePersonaResponse>> getDefinePersona(
+    public ResponseEntity<ApiResponse<DefinePersonaDto.DefinePersonaResponse>> createDefinePersona(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @RequestBody DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
 
-        DefinePersonaDto.DefinePersonaResponse definePersonaResponse = definePersonaService.getDefinePersona(authorizationHeader, definePersonaRequest);
+        DefinePersonaDto.DefinePersonaResponse definePersonaResponse = definePersonaService.createDefinePersona(authorizationHeader, definePersonaRequest);
+
         return ApiResponse.onSuccess(PersonaSuccessStatus.CREATED_DEFINE_PERSONA, definePersonaResponse);
+    }
+
+    // 정의하기 페르소나 결과를 반환하는 API
+    @GetMapping("/define")
+    public ResponseEntity<ApiResponse<DefinePersonaDto.DefinePersonaResponse>> getDefinePersona(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        DefinePersonaDto.DefinePersonaResponse definePersonaResponse = definePersonaService.getDefinePersona(authorizationHeader);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_DEFINE_PERSONA, definePersonaResponse);
     }
 }
