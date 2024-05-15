@@ -108,7 +108,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             String accessToken = jwtUtil.generateAccessToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION_TIME);
 
             // 닉네임, 테스트 여부, 액세스 토큰을 담아 리다이렉트
-            DefinePersona definePersona = definePersonaRepository.findByUser(user);
+            DefinePersona definePersona = definePersonaRepository.findTopByUserOrderByCreatedAtDesc(user);
             String isTest = definePersona != null ? "T" : "F";
             String encodedName = URLEncoder.encode(user.getNickname(), StandardCharsets.UTF_8);
             String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, encodedName, isTest, accessToken);
