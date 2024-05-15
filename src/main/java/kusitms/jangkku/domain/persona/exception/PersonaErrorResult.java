@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum PersonaErrorResult implements BaseErrorCode {
-    NOT_FOUND_PERSONA_TYPE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 페르소나 타입입니다.");
+    NOT_FOUND_PERSONA_TYPE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 페르소나 타입입니다."),
+    NOT_FOUND_DEFINE_PERSONA(HttpStatus.NOT_FOUND, "404", "정의하기 페르소나가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

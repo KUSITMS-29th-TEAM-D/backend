@@ -34,20 +34,42 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 도출하는 메서드
     @Override
-    public DefinePersonaDto.DefinePersonaResponse getDefinePersona(String authorizationHeader, DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
+    public DefinePersonaDto.DefinePersonaResponse createDefinePersona(String authorizationHeader, DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
         List<String> definePersonaKeywords = new ArrayList<>();
         String stepOneKeyword = judgeStepOneType(definePersonaRequest.getStageOneKeywords(), definePersonaKeywords);
         String stepTwoKeyword = judgeStepTwoType(definePersonaRequest.getStageTwoKeywords(), definePersonaKeywords);
         String stepThreeKeyword = judgeStepThreeType(definePersonaRequest.getStageThreeKeywords(), definePersonaKeywords);
 
-        String definePersonaType = stepOneKeyword + stepTwoKeyword + stepThreeKeyword;
-        String definePersonaName = judgeDefinePersonaName(definePersonaType);
+        String definePersonaCode = stepOneKeyword + stepTwoKeyword + stepThreeKeyword;
+        String definePersonaName = judgeDefinePersonaName(definePersonaCode);
 
         if (authorizationHeader != null) {
-            saveDefinePersona(authorizationHeader, definePersonaName, definePersonaKeywords);
+            saveDefinePersona(authorizationHeader, definePersonaName, definePersonaCode, definePersonaKeywords);
         }
 
-        return createDefinePersonaResponse(definePersonaType, definePersonaKeywords);
+        return createDefinePersonaResponse(definePersonaCode, definePersonaKeywords);
+    }
+
+    // 정의하기 페르소나 결과를 반환하는 메서드
+    @Override
+    public DefinePersonaDto.DefinePersonaResponse getDefinePersona(String authorizationHeader) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DefinePersona definePersona = definePersonaRepository.findTopByUserOrderByCreatedAtDesc(user); // 가장 최근 결과만 가져옴
+
+        if (definePersona == null) {
+            throw new PersonaException(PersonaErrorResult.NOT_FOUND_DEFINE_PERSONA);
+        }
+
+        List<DefinePersonaKeyword> definePersonaKeywords = definePersonaKeywordRepository.findAllByDefinePersona(definePersona);
+        List<String> keywordStrings = definePersonaKeywords.stream()
+                .map(DefinePersonaKeyword::getName)
+                .toList();
+
+        return createDefinePersonaResponse(definePersona.getCode(), keywordStrings);
     }
 
     // 첫번째 유형 도출 메서드
@@ -86,10 +108,10 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     }
 
     // 3가지 유형으로 페르소나를 판단하는 메서드
-    private String judgeDefinePersonaName(String definePersonaType) {
+    private String judgeDefinePersonaName(String definePersonaCode) {
 
         for (Type type : Type.values()) {
-            if (type.getCode().equals(definePersonaType)) {
+            if (type.getCode().equals(definePersonaCode)) {
                 return type.getName();
             }
         }
@@ -114,7 +136,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     }
 
     // 정의하기 페르소나를 저장하는 메서드
-    private void saveDefinePersona(String authorizationHeader, String definePersonaName, List<String> definePersonaKeywords) {
+    private void saveDefinePersona(String authorizationHeader, String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
         String token = jwtUtil.getTokenFromHeader(authorizationHeader);
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
         User user = userRepository.findByUserId(userId)
@@ -123,6 +145,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         DefinePersona definePersona = DefinePersona.builder()
                 .user(user)
                 .name(definePersonaName)
+                .code(definePersonaCode)
                 .build();
         definePersonaRepository.save(definePersona);
 
@@ -136,9 +159,9 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     }
 
     // 정의하기 페르소나 응답 객체를 만드는 메서드
-    private DefinePersonaDto.DefinePersonaResponse createDefinePersonaResponse(String definePersonaType, List<String> definePersonaKeywords) {
+    private DefinePersonaDto.DefinePersonaResponse createDefinePersonaResponse(String definePersonaCode, List<String> definePersonaKeywords) {
         Content content = Arrays.stream(Content.values())
-                .filter(desc -> desc.getCode().equals(definePersonaType))
+                .filter(desc -> desc.getCode().equals(definePersonaCode))
                 .findFirst()
                 .orElse(null);
 
@@ -147,6 +170,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         }
 
         return DefinePersonaDto.DefinePersonaResponse.builder()
+                .name(content.getName())
                 .comment(content.getComment())
                 .description(content.getDescription())
                 .ability(content.getAbility())

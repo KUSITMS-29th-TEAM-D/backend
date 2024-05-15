@@ -27,13 +27,17 @@ public class DefinePersona {
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
+    @Column(name = "code", nullable = false, length = 20)
+    private String code;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, length = 20)
     private LocalDateTime createdAt;
 
     @Builder
-    public DefinePersona(User user, String name) {
+    public DefinePersona(User user, String name, String code) {
         this.user = user;
         this.name = name;
+        this.code = code;
     }
 }
