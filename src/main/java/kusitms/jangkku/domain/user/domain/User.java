@@ -39,7 +39,7 @@ public class User {
     @Column(name = "understanding_score", nullable = false, length = 10)
     private int understandingScore;
 
-    @Column(name = "profile_img_url", length = 50)
+    @Column(name = "profile_img_url", length = 100)
     private String profileImgUrl;
 
     @CreationTimestamp
@@ -61,4 +61,15 @@ public class User {
         this.understandingScore = understandingScore;
         this.profileImgUrl = profileImgUrl;
     }
+
+    public void updateProfileImgUrl(String profileImgUrl) {
+        this.profileImgUrl = profileImgUrl;
+    }
+
+    public void updateInfos(String nickname, String job, int understandingScore) {
+        this.nickname = nickname;
+        this.job = job;
+        this.understandingScore = understandingScore;
+    }
+
 }
