@@ -122,6 +122,31 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    // 유저 정보를 반환하는 메서드
+    @Override
+    public UserDto.UserInfosResponse getUserInfos(String authorizationHeader) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        return createUserInfosResponse(user);
+    }
+
+    // 유저 정보를 수정하는 메서드
+    @Override
+    public UserDto.UserInfosResponse editUserInfos(String authorizationHeader, UserDto.EditUserInfosRequest editUserInfosRequest) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        user.updateInfos(editUserInfosRequest.getNickname(), editUserInfosRequest.getJob(), editUserInfosRequest.getUnderstandingScore());
+        userRepository.save(user);
+
+        return createUserInfosResponse(user);
+    }
+
     // 사용자의 관심 분야를 저장하는 메서드
     private void saveUserInterests(User user, List<String> interestList) {
         if (interestList != null && !interestList.isEmpty()) {
@@ -154,5 +179,17 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
+    }
+
+    private UserDto.UserInfosResponse createUserInfosResponse(User user) {
+
+        return UserDto.UserInfosResponse.builder()
+                .name(user.getName())
+                .provider(user.getProvider())
+                .nickname(user.getNickname())
+                .job(user.getJob())
+                .understandingScore(user.getUnderstandingScore())
+                .profileImgUrl(user.getProfileImgUrl())
+                .build();
     }
 }

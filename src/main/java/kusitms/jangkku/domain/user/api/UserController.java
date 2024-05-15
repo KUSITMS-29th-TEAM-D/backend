@@ -40,7 +40,7 @@ public class UserController {
         }
     }
 
-    // 프로필 사진을 업로드 API
+    // 프로필 사진을 업로드 하는 API
     @PostMapping("/profile-img")
     public ResponseEntity<ApiResponse<Object>> uploadProfileImg(
             @RequestHeader("Authorization") String authorizationHeader,
@@ -49,5 +49,26 @@ public class UserController {
         userService.uploadProfileImg(authorizationHeader, file);
 
         return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_UPLOAD_PROFILE_IMG);
+    }
+
+    // 유저 정보를 조회하는 API
+    @GetMapping("/infos")
+    public ResponseEntity<ApiResponse<Object>> getUserInfos(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        UserDto.UserInfosResponse userInfosResponse = userService.getUserInfos(authorizationHeader);
+
+        return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_GET_USER_INFOS, userInfosResponse);
+    }
+
+    // 유저 정보를 수정하는 API
+    @PatchMapping("/infos")
+    public ResponseEntity<ApiResponse<Object>> editUserInfos(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody UserDto.EditUserInfosRequest editUserInfosRequest) {
+
+        UserDto.UserInfosResponse userInfosResponse = userService.editUserInfos(authorizationHeader, editUserInfosRequest);
+
+        return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_EDIT_USER_INFOS, userInfosResponse);
     }
 }

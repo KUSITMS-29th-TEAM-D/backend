@@ -65,4 +65,11 @@ public class User {
     public void updateProfileImgUrl(String profileImgUrl) {
         this.profileImgUrl = profileImgUrl;
     }
+
+    public void updateInfos(String nickname, String job, int understandingScore) {
+        this.nickname = nickname;
+        this.job = job;
+        this.understandingScore = understandingScore;
+    }
+
 }

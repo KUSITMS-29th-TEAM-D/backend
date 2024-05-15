@@ -8,4 +8,6 @@ public interface UserService {
     UserDto.UserRegisterResponse registerUser(HttpServletResponse response, String authorizationHeader, UserDto.UserRegisterRequest userRegisterRequest);
     boolean isDuplicate(String nickname);
     void uploadProfileImg(String authorizationHeader, MultipartFile file);
+    UserDto.UserInfosResponse getUserInfos(String authorizationHeader);
+    UserDto.UserInfosResponse editUserInfos(String authorizationHeader, UserDto.EditUserInfosRequest editUserInfosRequest);
 }
