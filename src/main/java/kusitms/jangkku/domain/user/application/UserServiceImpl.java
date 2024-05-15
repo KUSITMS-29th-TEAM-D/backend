@@ -14,13 +14,17 @@ import kusitms.jangkku.domain.user.dao.UserInterestRepository;
 import kusitms.jangkku.domain.user.domain.UserInterest;
 import kusitms.jangkku.domain.user.dao.UserKeywordRepository;
 import kusitms.jangkku.domain.user.domain.UserKeyword;
+import kusitms.jangkku.domain.user.exception.UserErrorResult;
+import kusitms.jangkku.domain.user.exception.UserException;
 import kusitms.jangkku.global.util.CookieUtil;
 import kusitms.jangkku.global.util.JwtUtil;
+import kusitms.jangkku.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +41,7 @@ public class UserServiceImpl implements UserService {
 
     private final JwtUtil jwtUtil;
     private final CookieUtil cookieUtil;
+    private final S3Util s3Util;
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
     private final KeywordRepository keywordRepository;
@@ -95,6 +100,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isDuplicate(String nickname) {
         return userRepository.findByNickname(nickname) != null;
+    }
+
+    // 유저 프로필 사진을 업로드하는 메서드
+    @Override
+    public void uploadProfileImg(String authorizationHeader, MultipartFile file) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        String existProfileImgUrl = user.getProfileImgUrl();
+
+        String profileImgUrl = s3Util.uploadProfileImg(file);
+        user.updateProfileImgUrl(profileImgUrl);
+        userRepository.save(user);
+
+        // 기존 파일 삭제
+        if (existProfileImgUrl != null && !existProfileImgUrl.equals(profileImgUrl)) {
+            s3Util.deleteS3(existProfileImgUrl);
+        }
+
     }
 
     // 사용자의 관심 분야를 저장하는 메서드

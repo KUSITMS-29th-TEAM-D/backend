@@ -6,10 +6,10 @@ import kusitms.jangkku.domain.user.constant.UserSuccessStatus;
 import kusitms.jangkku.domain.user.dto.UserDto;
 import kusitms.jangkku.domain.user.exception.UserErrorResult;
 import kusitms.jangkku.global.common.ApiResponse;
-import kusitms.jangkku.global.common.constant.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
@@ -38,5 +38,16 @@ public class UserController {
         } else {
             return ApiResponse.onFailure(UserErrorResult.IS_DUPLICATE_NICKNAME);
         }
+    }
+
+    // 프로필 사진을 업로드 API
+    @PostMapping("/profile-img")
+    public ResponseEntity<ApiResponse<Object>> uploadProfileImg(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam("file") MultipartFile file) {
+
+        userService.uploadProfileImg(authorizationHeader, file);
+
+        return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_UPLOAD_PROFILE_IMG);
     }
 }
