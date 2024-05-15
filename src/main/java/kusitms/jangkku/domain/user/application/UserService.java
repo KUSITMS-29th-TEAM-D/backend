@@ -10,4 +10,5 @@ public interface UserService {
     void uploadProfileImg(String authorizationHeader, MultipartFile file);
     UserDto.UserInfosResponse getUserInfos(String authorizationHeader);
     UserDto.UserInfosResponse editUserInfos(String authorizationHeader, UserDto.EditUserInfosRequest editUserInfosRequest);
+    void logout(HttpServletResponse response, String authorizationHeader);
 }

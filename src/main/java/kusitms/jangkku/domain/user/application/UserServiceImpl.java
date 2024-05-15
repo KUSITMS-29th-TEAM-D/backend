@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.user.application;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import kusitms.jangkku.domain.interest.dao.InterestRepository;
 import kusitms.jangkku.domain.interest.domain.Interest;
@@ -145,6 +146,13 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return createUserInfosResponse(user);
+    }
+
+    // 쿠키를 삭제하는 메서드
+    @Override
+    public void logout(HttpServletResponse response, String authorizationHeader) {
+        Cookie cookie = cookieUtil.deleteCookie();
+        response.addCookie(cookie);
     }
 
     // 사용자의 관심 분야를 저장하는 메서드
