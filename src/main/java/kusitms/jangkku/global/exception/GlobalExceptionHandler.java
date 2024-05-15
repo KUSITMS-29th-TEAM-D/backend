@@ -35,4 +35,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         PersonaErrorResult errorResult = e.getPersonaErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
+    // S3
+    @ExceptionHandler(S3Exception.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleS3Exception(S3Exception e) {
+        S3ErrorResult errorResult = e.getS3ErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
 }
