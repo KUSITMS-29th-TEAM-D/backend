@@ -71,4 +71,15 @@ public class UserController {
 
         return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_EDIT_USER_INFOS, userInfosResponse);
     }
+
+    // 유저 로그아웃 API
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Object>> logout(
+            HttpServletResponse response,
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        userService.logout(response, authorizationHeader);
+
+        return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_LOGOUT);
+    }
 }

@@ -14,7 +14,8 @@ public enum UserSuccessStatus implements BaseCode {
     IS_NICKNAME_POSSIBLE(HttpStatus.OK, "200", "사용할 수 있는 닉네임입니다."),
     SUCCESS_UPLOAD_PROFILE_IMG(HttpStatus.OK, "200", "프로필 사진 수정에 성공했습니다."),
     SUCCESS_GET_USER_INFOS(HttpStatus.OK, "200", "유저 정보 조회에 성공했습니다."),
-    SUCCESS_EDIT_USER_INFOS(HttpStatus.OK, "200", "유저 정보 수정에 성공했습니다.");
+    SUCCESS_EDIT_USER_INFOS(HttpStatus.OK, "200", "유저 정보 수정에 성공했습니다."),
+    SUCCESS_LOGOUT(HttpStatus.OK, "200", "유저 로그아웃에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
