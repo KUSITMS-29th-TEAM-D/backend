@@ -37,10 +37,12 @@ dependencies {
     // 롬복
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    //h2
+    // h2
     runtimeOnly 'com.h2database:h2'
-    //WebClient
+    // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {
