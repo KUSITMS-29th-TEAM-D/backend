@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
     // 쿠키를 삭제하는 메서드
     @Override
-    public void logout(HttpServletResponse response, String authorizationHeader) {
+    public void logout(HttpServletResponse response) {
         Cookie cookie = cookieUtil.deleteCookie();
         response.addCookie(cookie);
     }

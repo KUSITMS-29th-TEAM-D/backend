@@ -75,10 +75,9 @@ public class UserController {
     // 유저 로그아웃 API
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Object>> logout(
-            HttpServletResponse response,
-            @RequestHeader("Authorization") String authorizationHeader) {
+            HttpServletResponse response) {
 
-        userService.logout(response, authorizationHeader);
+        userService.logout(response);
 
         return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_LOGOUT);
     }
