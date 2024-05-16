@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 public enum PersonaSuccessStatus implements BaseCode {
     // 정의하기 페르소나
     CREATED_DEFINE_PERSONA(HttpStatus.CREATED, "201", "정의하기 페르소나 생성에 성공했습니다."),
-    GET_DEFINE_PERSONA(HttpStatus.OK, "200", "정의하기 페르소나 조회에 성공했습니다.");
+    GET_DEFINE_PERSONA(HttpStatus.OK, "200", "정의하기 페르소나 조회에 성공했습니다."),
+    // 설계하기 페르소나
+    CREATED_DESIGN_PERSONA(HttpStatus.CREATED, "201", "설계하기 페르소나 생성에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
