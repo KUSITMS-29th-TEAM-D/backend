@@ -20,7 +20,6 @@ public class ChatBotDto {
         private int maxTokens; //생성되는 텍스트의 최대 길이
         private double repeatPenalty; //생성되는 텍스트의 최대 길이
 
-
         public static ChatBotRequestDto of() {
             ArrayList<Message> messages = new ArrayList<>();
             messages.add(Message.createDefaultOf());
@@ -34,6 +33,19 @@ public class ChatBotDto {
                     .build();
         }
 
+        public static ChatBotRequestDto createDesignPersonaRequest() {
+            ArrayList<Message> messages = new ArrayList<>();
+            messages.add(Message.createDesignPersonaSystemMessage());
+
+            return ChatBotRequestDto.builder()
+                    .messages(messages)
+                    .topP(0.8)
+                    .temperature(0.5)
+                    .maxTokens(256)
+                    .repeatPenalty(5.0)
+
+                    .build();
+        }
     }
 
     @Builder
@@ -43,5 +55,4 @@ public class ChatBotDto {
     public static class ChatBotResponse {
         private Result result;
     }
-
 }
