@@ -1,7 +1,9 @@
 package kusitms.jangkku.global.util;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import kusitms.jangkku.global.exception.S3ErrorResult;
 import kusitms.jangkku.global.exception.S3Exception;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,8 @@ public class S3Util {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
 
-            amazonS3Client.putObject(BUCKET, fileName, file.getInputStream(), metadata);
+            amazonS3Client.putObject(new PutObjectRequest(BUCKET, fileName, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
 
             return fileUrl;
 
