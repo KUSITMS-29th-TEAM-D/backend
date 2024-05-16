@@ -23,8 +23,8 @@ public class ChatBotService {
     @Autowired
     WebClient webClient;
 
-//첫 요청이면 ChatBotRequestDto.of()함수 생성 -> 사용자 메시지 추가 -> webclient 호출 -> CLOVAStudio 응답 추가 -> 세션에 추가
-//두번째 요청부터는 기존 세션에서 dto 찾기 -> 그 dto에 사용자 메시지 추가 -> webclinet 호출 ->  CLOVAStudio 응답 추가 -> 세션에 다시 추가
+    //첫 요청이면 ChatBotRequestDto.of()함수 생성 -> 사용자 메시지 추가 -> webclient 호출 -> CLOVAStudio 응답 추가 -> 세션에 추가
+    //두번째 요청부터는 기존 세션에서 dto 찾기 -> 그 dto에 사용자 메시지 추가 -> webclinet 호출 ->  CLOVAStudio 응답 추가 -> 세션에 다시 추가
 
     public String requestChatBot(ChatBotUserDto.ChatBotUserRequestDto requestDto, HttpSession session) {
         ChatBotDto.ChatBotRequestDto request = checkIsStart(requestDto.isStart, session);
@@ -37,8 +37,8 @@ public class ChatBotService {
         return chatbotRequest;
     }
 
-    public ChatBotDto.ChatBotRequestDto checkIsStart(boolean isSart, HttpSession session) {
-        if (isSart) return ChatBotDto.ChatBotRequestDto.of();
+    public ChatBotDto.ChatBotRequestDto checkIsStart(boolean isStart, HttpSession session) {
+        if (isStart) return ChatBotDto.ChatBotRequestDto.of();
         else return (ChatBotDto.ChatBotRequestDto) session.getAttribute("chatBot");
     }
 
@@ -56,5 +56,13 @@ public class ChatBotService {
         return message.getResult().getMessage().getContent();
     }
 
-}
+    // 설계하기 페르소나를 CLOVA로 생성하는 메서드
+    public String createDesignPersona(String message) {
+        ChatBotDto.ChatBotRequestDto request = ChatBotDto.ChatBotRequestDto.createDesignPersonaRequest();
+        request.getMessages().add(Message.creatUserOf(message));
+        String designPersonaResult = requestWebClient(request);
+        System.out.println(designPersonaResult);
 
+        return designPersonaResult;
+    }
+}
