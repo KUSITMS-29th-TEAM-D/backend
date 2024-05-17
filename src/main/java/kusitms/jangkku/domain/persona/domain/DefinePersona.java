@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,6 +25,9 @@ public class DefinePersona {
     @JoinColumn(name = "users_id", foreignKey = @ForeignKey(name = "define_personas_fk_users_id"))
     private User user;
 
+    @Column(name = "define_personas_uuid", columnDefinition = "BINARY(16)", unique = true)
+    private UUID definePersonaId;
+
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
@@ -37,6 +41,7 @@ public class DefinePersona {
     @Builder
     public DefinePersona(User user, String name, String code) {
         this.user = user;
+        this.definePersonaId = UUID.randomUUID();
         this.name = name;
         this.code = code;
     }

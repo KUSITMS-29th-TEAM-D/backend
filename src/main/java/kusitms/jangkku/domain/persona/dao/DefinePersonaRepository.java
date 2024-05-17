@@ -5,8 +5,11 @@ import kusitms.jangkku.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 public interface DefinePersonaRepository extends JpaRepository<DefinePersona,Long> {
     DefinePersona findByUser(User user);
+    DefinePersona findByDefinePersonaId(UUID definePersonaId);
     DefinePersona findTopByUserOrderByCreatedAtDesc(User user);
 }

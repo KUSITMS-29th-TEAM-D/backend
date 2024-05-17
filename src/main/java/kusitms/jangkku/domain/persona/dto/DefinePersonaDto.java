@@ -30,6 +30,7 @@ public class DefinePersonaDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DefinePersonaResponse {
+        private String definePersonaId;
         private String name;
         private String comment;
         private String description;
@@ -39,5 +40,7 @@ public class DefinePersonaDto {
         private String preference;
         private List<String> types;
         private List<String> definePersonaKeywords;
+        private String frontImgUrl;
+        private String backImgUrl;
     }
 }
