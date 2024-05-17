@@ -25,12 +25,22 @@ public class DefinePersonaController {
         return ApiResponse.onSuccess(PersonaSuccessStatus.CREATED_DEFINE_PERSONA, definePersonaResponse);
     }
 
-    // 정의하기 페르소나 결과를 반환하는 API
+    // 정의하기 페르소나 결과를 반환하는 API (로그인 유저)
     @GetMapping("/define")
     public ResponseEntity<ApiResponse<DefinePersonaDto.DefinePersonaResponse>> getDefinePersona(
             @RequestHeader("Authorization") String authorizationHeader) {
 
         DefinePersonaDto.DefinePersonaResponse definePersonaResponse = definePersonaService.getDefinePersona(authorizationHeader);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_DEFINE_PERSONA, definePersonaResponse);
+    }
+
+    // 정의하기 페르소나 결과를 반환하는 API (비로그인 유저)
+    @GetMapping("/define/sharing")
+    public ResponseEntity<ApiResponse<DefinePersonaDto.DefinePersonaResponse>> getDefinePersonaForSharing(
+            @RequestParam("define_persona_id") String definePersonaId) {
+
+        DefinePersonaDto.DefinePersonaResponse definePersonaResponse = definePersonaService.getDefinePersonaForSharing(definePersonaId);
 
         return ApiResponse.onSuccess(PersonaSuccessStatus.GET_DEFINE_PERSONA, definePersonaResponse);
     }

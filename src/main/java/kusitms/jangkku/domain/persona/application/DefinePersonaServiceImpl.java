@@ -43,14 +43,17 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         String definePersonaCode = stepOneKeyword + stepTwoKeyword + stepThreeKeyword;
         String definePersonaName = judgeDefinePersonaName(definePersonaCode);
 
-        if (authorizationHeader != null) {
-            saveDefinePersona(authorizationHeader, definePersonaName, definePersonaCode, definePersonaKeywords);
+        DefinePersona definePersona;
+        if (authorizationHeader != null) { // 로그인 유저 저장
+            definePersona = saveDefinePersona(authorizationHeader, definePersonaName, definePersonaCode, definePersonaKeywords);
+        } else {                           // 비로그인 유저 저장
+            definePersona = saveDefinePersonaForSharing(definePersonaName, definePersonaCode, definePersonaKeywords);
         }
 
-        return createDefinePersonaResponse(definePersonaCode, definePersonaKeywords);
+        return createDefinePersonaResponse(definePersona.getDefinePersonaId(), definePersonaCode, definePersonaKeywords);
     }
 
-    // 정의하기 페르소나 결과를 반환하는 메서드
+    // 정의하기 페르소나 결과를 반환하는 메서드 (로그인 유저)
     @Override
     public DefinePersonaDto.DefinePersonaResponse getDefinePersona(String authorizationHeader) {
         String token = jwtUtil.getTokenFromHeader(authorizationHeader);
@@ -69,7 +72,25 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
                 .map(DefinePersonaKeyword::getName)
                 .toList();
 
-        return createDefinePersonaResponse(definePersona.getCode(), keywordStrings);
+        return createDefinePersonaResponse(definePersona.getDefinePersonaId(), definePersona.getCode(), keywordStrings);
+    }
+
+    // 정의하기 페르소나 결과를 반환하는 메서드 (비로그인 유저)
+    @Override
+    public DefinePersonaDto.DefinePersonaResponse getDefinePersonaForSharing(String definePersonaId) {
+
+        DefinePersona definePersona = definePersonaRepository.findByDefinePersonaId(UUID.fromString(definePersonaId)); // 고유 id로 검색
+
+        if (definePersona == null) {
+            throw new PersonaException(PersonaErrorResult.NOT_FOUND_DEFINE_PERSONA);
+        }
+
+        List<DefinePersonaKeyword> definePersonaKeywords = definePersonaKeywordRepository.findAllByDefinePersona(definePersona);
+        List<String> keywordStrings = definePersonaKeywords.stream()
+                .map(DefinePersonaKeyword::getName)
+                .toList();
+
+        return createDefinePersonaResponse(definePersona.getDefinePersonaId(), definePersona.getCode(), keywordStrings);
     }
 
     // 첫번째 유형 도출 메서드
@@ -135,8 +156,8 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         return pickedFirstKeywords.size() > pickedSecondKeywords.size() ? pickedFirstKeywords : pickedSecondKeywords;
     }
 
-    // 정의하기 페르소나를 저장하는 메서드
-    private void saveDefinePersona(String authorizationHeader, String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
+    // 정의하기 페르소나를 저장하는 메서드 (로그인 유저)
+    private DefinePersona saveDefinePersona(String authorizationHeader, String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
         String token = jwtUtil.getTokenFromHeader(authorizationHeader);
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
         User user = userRepository.findByUserId(userId)
@@ -156,10 +177,32 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
                     .build();
             definePersonaKeywordRepository.save(definePersonaKeyword);
         }
+
+        return definePersona;
+    }
+
+    // 정의하기 페르소나를 저장하는 메서드 (비로그인 유저)
+    private DefinePersona saveDefinePersonaForSharing(String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
+
+        DefinePersona definePersona = DefinePersona.builder()
+                .name(definePersonaName)
+                .code(definePersonaCode)
+                .build();
+        definePersonaRepository.save(definePersona);
+
+        for (String keyword : definePersonaKeywords) {
+            DefinePersonaKeyword definePersonaKeyword = DefinePersonaKeyword.builder()
+                    .definePersona(definePersona)
+                    .name(keyword)
+                    .build();
+            definePersonaKeywordRepository.save(definePersonaKeyword);
+        }
+
+        return definePersona;
     }
 
     // 정의하기 페르소나 응답 객체를 만드는 메서드
-    private DefinePersonaDto.DefinePersonaResponse createDefinePersonaResponse(String definePersonaCode, List<String> definePersonaKeywords) {
+    private DefinePersonaDto.DefinePersonaResponse createDefinePersonaResponse(UUID definePersonaId, String definePersonaCode, List<String> definePersonaKeywords) {
         Content content = Arrays.stream(Content.values())
                 .filter(desc -> desc.getCode().equals(definePersonaCode))
                 .findFirst()
@@ -170,6 +213,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         }
 
         return DefinePersonaDto.DefinePersonaResponse.builder()
+                .definePersonaId(String.valueOf(definePersonaId))
                 .name(content.getName())
                 .comment(content.getComment())
                 .description(content.getDescription())
@@ -179,6 +223,8 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
                 .preference(content.getPreference())
                 .types(content.getTypes())
                 .definePersonaKeywords(definePersonaKeywords)
+                .frontImgUrl(content.getFrontImgUrl())
+                .backImgUrl(content.getBackImgUrl())
                 .build();
     }
 }
