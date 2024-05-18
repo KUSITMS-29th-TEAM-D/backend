@@ -24,4 +24,14 @@ public class DesignPersonaController {
 
         return ApiResponse.onSuccess(PersonaSuccessStatus.CREATED_DESIGN_PERSONA, designPersonaResponse);
     }
+
+    // 설계하기 페르소나를 조회하는 API
+    @GetMapping("/design")
+    public ResponseEntity<ApiResponse<DesignPersonaDto.DesignPersonaDetailResponse>> getDesignPersona(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        DesignPersonaDto.DesignPersonaDetailResponse designPersonaDetailResponse = designPersonaService.getDesignPersona(authorizationHeader);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_DESIGN_PERSONA, designPersonaDetailResponse);
+    }
 }
