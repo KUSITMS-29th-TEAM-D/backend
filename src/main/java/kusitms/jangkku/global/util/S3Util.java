@@ -1,6 +1,6 @@
 package kusitms.jangkku.global.util;
 
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -21,7 +21,7 @@ public class S3Util {
     @Value("${cloud.aws.s3.endpoint}")
     private String END_POINT;
 
-    private final AmazonS3Client amazonS3Client;
+    private final AmazonS3 amazonS3Client;
 
     // S3에 파일을 업로드하는 메서드
     public String uploadProfileImg(MultipartFile file) {
