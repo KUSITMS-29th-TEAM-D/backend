@@ -8,10 +8,12 @@ import kusitms.jangkku.domain.persona.dao.DefinePersonaRepository;
 import kusitms.jangkku.domain.persona.domain.DefinePersona;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
 import kusitms.jangkku.domain.token.domain.RefreshToken;
+import kusitms.jangkku.domain.user.dao.UserOnboardingInfoRepository;
 import kusitms.jangkku.domain.user.dao.UserRepository;
 import kusitms.jangkku.domain.user.domain.User;
 import kusitms.jangkku.domain.auth.dto.KakaoUserInfo;
 import kusitms.jangkku.domain.auth.dto.NaverUserInfo;
+import kusitms.jangkku.domain.user.domain.UserOnboardingInfo;
 import kusitms.jangkku.global.util.CookieUtil;
 import kusitms.jangkku.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +51,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
     private final JwtUtil jwtUtil;
     private final CookieUtil cookieUtil;
     private final UserRepository userRepository;
+    private final UserOnboardingInfoRepository userOnboardingInfoRepository;
     private final DefinePersonaRepository definePersonaRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -95,6 +98,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             // 기존 유저인 경우
             log.info("기존 유저입니다.");
             user = existUser;
+            UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
 
             // 리프레쉬 토큰이 담긴 쿠키 생성 후 설정
             ResponseCookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
@@ -110,7 +114,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             // 닉네임, 테스트 여부, 액세스 토큰을 담아 리다이렉트
             DefinePersona definePersona = definePersonaRepository.findTopByUserOrderByCreatedAtDesc(user);
             String isTest = definePersona != null ? "T" : "F";
-            String encodedName = URLEncoder.encode(user.getNickname(), StandardCharsets.UTF_8);
+            String encodedName = URLEncoder.encode(userOnboardingInfo.getNickname(), StandardCharsets.UTF_8);
             String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, encodedName, isTest, accessToken);
             getRedirectStrategy().sendRedirect(request, response, redirectUri);
         }

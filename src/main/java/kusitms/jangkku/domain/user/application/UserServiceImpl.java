@@ -8,8 +8,10 @@ import kusitms.jangkku.domain.keyword.dao.KeywordRepository;
 import kusitms.jangkku.domain.keyword.domain.Keyword;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
 import kusitms.jangkku.domain.token.domain.RefreshToken;
+import kusitms.jangkku.domain.user.dao.UserOnboardingInfoRepository;
 import kusitms.jangkku.domain.user.dao.UserRepository;
 import kusitms.jangkku.domain.user.domain.User;
+import kusitms.jangkku.domain.user.domain.UserOnboardingInfo;
 import kusitms.jangkku.domain.user.dto.UserDto;
 import kusitms.jangkku.domain.user.dao.UserInterestRepository;
 import kusitms.jangkku.domain.user.domain.UserInterest;
@@ -44,6 +46,7 @@ public class UserServiceImpl implements UserService {
     private final CookieUtil cookieUtil;
     private final S3Util s3Util;
     private final UserRepository userRepository;
+    private final UserOnboardingInfoRepository userOnboardingInfoRepository;
     private final InterestRepository interestRepository;
     private final KeywordRepository keywordRepository;
     private final UserInterestRepository userInterestRepository;
@@ -61,19 +64,21 @@ public class UserServiceImpl implements UserService {
 
         log.info("유저 등록을 진행합니다.");
 
-        // User 객체를 빌더 패턴으로 생성하여 기본 정보 설정
         User user = User.builder()
                 .userId(UUID.randomUUID())
                 .name(name)
                 .provider(provider)
                 .providerId(providerId)
+                .build();
+        userRepository.save(user);
+
+        UserOnboardingInfo userOnboardingInfo = UserOnboardingInfo.builder()
+                .user(user)
                 .nickname(userRegisterRequest.getNickname())
                 .job(userRegisterRequest.getJob())
                 .understandingScore(userRegisterRequest.getUnderstandingScore())
                 .build();
-
-        // User 저장
-        userRepository.save(user);
+        userOnboardingInfoRepository.save(userOnboardingInfo);
 
         // 사용자가 입력한 관심 분야와 키워드를 찾아서 저장
         saveUserInterests(user, userRegisterRequest.getInterestList());
@@ -91,16 +96,13 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION_TIME);
 
         // 액세스 토큰 반환
-        return UserDto.UserRegisterResponse.builder()
-                .nickname(user.getNickname())
-                .accessToken(accessToken)
-                .build();
+        return UserDto.UserRegisterResponse.of(accessToken, userOnboardingInfo.getNickname());
     }
 
     // 닉네임 중복 여부를 판단하는 메서드
     @Override
     public boolean isDuplicate(String nickname) {
-        return userRepository.findByNickname(nickname) != null;
+        return userOnboardingInfoRepository.findByNickname(nickname) != null;
     }
 
     // 유저 프로필 사진을 업로드하는 메서드
@@ -110,11 +112,12 @@ public class UserServiceImpl implements UserService {
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
-        String existProfileImgUrl = user.getProfileImgUrl();
+        UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
+        String existProfileImgUrl = userOnboardingInfo.getProfileImgUrl();
 
         String profileImgUrl = s3Util.uploadProfileImg(file);
-        user.updateProfileImgUrl(profileImgUrl);
-        userRepository.save(user);
+        userOnboardingInfo.updateProfileImgUrl(profileImgUrl);
+        userOnboardingInfoRepository.save(userOnboardingInfo);
 
         // 기존 파일 삭제
         if (existProfileImgUrl != null && !existProfileImgUrl.equals(profileImgUrl)) {
@@ -130,8 +133,9 @@ public class UserServiceImpl implements UserService {
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
 
-        return createUserInfosResponse(user);
+        return UserDto.UserInfosResponse.of(user, userOnboardingInfo);
     }
 
     // 유저 정보를 수정하는 메서드
@@ -141,11 +145,12 @@ public class UserServiceImpl implements UserService {
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
 
-        user.updateInfos(editUserInfosRequest.getNickname(), editUserInfosRequest.getJob(), editUserInfosRequest.getUnderstandingScore());
-        userRepository.save(user);
+        userOnboardingInfo.updateInfos(editUserInfosRequest.getNickname(), editUserInfosRequest.getJob(), editUserInfosRequest.getUnderstandingScore());
+        userOnboardingInfoRepository.save(userOnboardingInfo);
 
-        return createUserInfosResponse(user);
+        return UserDto.UserInfosResponse.of(user, userOnboardingInfo);
     }
 
     // 쿠키를 삭제하는 메서드
@@ -187,17 +192,5 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
-    }
-
-    private UserDto.UserInfosResponse createUserInfosResponse(User user) {
-
-        return UserDto.UserInfosResponse.builder()
-                .name(user.getName())
-                .provider(user.getProvider())
-                .nickname(user.getNickname())
-                .job(user.getJob())
-                .understandingScore(user.getUnderstandingScore())
-                .profileImgUrl(user.getProfileImgUrl())
-                .build();
     }
 }

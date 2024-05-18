@@ -45,9 +45,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
         saveDesignPersonaPlatforms(designPersona, designPersonaRequest.getPlatforms());
     }
 
-        return DesignPersonaDto.DesignPersonaResponse.builder()
-                .definition(stringUtil.removeQuotesAndBackslashes(designPersonaDefinition))
-                .build();
+        return DesignPersonaDto.DesignPersonaResponse.of(stringUtil.removeQuotesAndBackslashes(designPersonaDefinition));
     }
 
     // CLOVA로 보낼 메세지를 생성하는 메서드

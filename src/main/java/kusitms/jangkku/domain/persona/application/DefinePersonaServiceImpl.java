@@ -1,7 +1,6 @@
 package kusitms.jangkku.domain.persona.application;
 
 
-import kusitms.jangkku.domain.persona.constant.Content;
 import kusitms.jangkku.domain.persona.constant.Type;
 import kusitms.jangkku.domain.persona.constant.Keyword;
 import kusitms.jangkku.domain.persona.dao.DefinePersonaKeywordRepository;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +48,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
             definePersona = saveDefinePersonaForSharing(definePersonaName, definePersonaCode, definePersonaKeywords);
         }
 
-        return createDefinePersonaResponse(definePersona.getDefinePersonaId(), definePersonaCode, definePersonaKeywords);
+        return DefinePersonaDto.DefinePersonaResponse.of(definePersona.getDefinePersonaId(), definePersona.getCode(), definePersonaKeywords);
     }
 
     // 정의하기 페르소나 결과를 반환하는 메서드 (로그인 유저)
@@ -72,7 +70,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
                 .map(DefinePersonaKeyword::getName)
                 .toList();
 
-        return createDefinePersonaResponse(definePersona.getDefinePersonaId(), definePersona.getCode(), keywordStrings);
+        return DefinePersonaDto.DefinePersonaResponse.of(definePersona.getDefinePersonaId(), definePersona.getCode(), keywordStrings);
     }
 
     // 정의하기 페르소나 결과를 반환하는 메서드 (비로그인 유저)
@@ -90,7 +88,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
                 .map(DefinePersonaKeyword::getName)
                 .toList();
 
-        return createDefinePersonaResponse(definePersona.getDefinePersonaId(), definePersona.getCode(), keywordStrings);
+        return DefinePersonaDto.DefinePersonaResponse.of(definePersona.getDefinePersonaId(), definePersona.getCode(), keywordStrings);
     }
 
     // 첫번째 유형 도출 메서드
@@ -199,32 +197,5 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         }
 
         return definePersona;
-    }
-
-    // 정의하기 페르소나 응답 객체를 만드는 메서드
-    private DefinePersonaDto.DefinePersonaResponse createDefinePersonaResponse(UUID definePersonaId, String definePersonaCode, List<String> definePersonaKeywords) {
-        Content content = Arrays.stream(Content.values())
-                .filter(desc -> desc.getCode().equals(definePersonaCode))
-                .findFirst()
-                .orElse(null);
-
-        if (content == null) {
-            throw new PersonaException(PersonaErrorResult.NOT_FOUND_PERSONA_TYPE);
-        }
-
-        return DefinePersonaDto.DefinePersonaResponse.builder()
-                .definePersonaId(String.valueOf(definePersonaId))
-                .name(content.getName())
-                .comment(content.getComment())
-                .description(content.getDescription())
-                .ability(content.getAbility())
-                .values(content.getValues())
-                .strength(content.getStrength())
-                .preference(content.getPreference())
-                .types(content.getTypes())
-                .definePersonaKeywords(definePersonaKeywords)
-                .frontImgUrl(content.getFrontImgUrl())
-                .backImgUrl(content.getBackImgUrl())
-                .build();
     }
 }
