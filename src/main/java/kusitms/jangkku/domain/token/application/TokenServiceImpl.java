@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
 import kusitms.jangkku.domain.token.domain.RefreshToken;
-import kusitms.jangkku.domain.token.dto.response.TokenResponse;
+import kusitms.jangkku.domain.token.dto.TokenDto;
 import kusitms.jangkku.domain.token.exception.TokenErrorResult;
 import kusitms.jangkku.domain.token.exception.TokenException;
 import kusitms.jangkku.global.util.CookieUtil;
@@ -32,7 +32,7 @@ public class TokenServiceImpl implements TokenService {
     private final CookieUtil cookieUtil;
 
     @Override
-    public TokenResponse reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public TokenDto.TokenResponse reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = cookieUtil.getCookie(request);
         String refreshToken = cookie.getValue();
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(refreshToken));
@@ -57,8 +57,6 @@ public class TokenServiceImpl implements TokenService {
         refreshTokenRepository.save(newRefreshToken);
 
         // 새로운 액세스 토큰을 담아 반환
-        return TokenResponse.builder()
-                .accessToken(newAccessToken)
-                .build();
+        return TokenDto.TokenResponse.of(newAccessToken);
     }
 }
