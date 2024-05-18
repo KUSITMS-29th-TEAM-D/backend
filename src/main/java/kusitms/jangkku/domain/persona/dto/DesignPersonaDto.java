@@ -33,6 +33,12 @@ public class DesignPersonaDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DesignPersonaResponse {
         private String definition;
+
+        public static DesignPersonaDto.DesignPersonaResponse of(String designPersonaDefinition) {
+            return DesignPersonaDto.DesignPersonaResponse.builder()
+                    .definition(designPersonaDefinition)
+                    .build();
+        }
     }
 
     @Builder

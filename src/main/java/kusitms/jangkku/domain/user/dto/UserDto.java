@@ -3,6 +3,8 @@ package kusitms.jangkku.domain.user.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import kusitms.jangkku.domain.user.domain.User;
+import kusitms.jangkku.domain.user.domain.UserOnboardingInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +36,14 @@ public class UserDto {
     public static class UserRegisterResponse {
         private String accessToken;
         private String nickname;
+
+        public static UserDto.UserRegisterResponse of(String accessToken, String nickname) {
+
+            return UserRegisterResponse.builder()
+                    .accessToken(accessToken)
+                    .nickname(nickname)
+                    .build();
+        }
     }
 
     @Builder
@@ -61,5 +71,17 @@ public class UserDto {
         private String job;
         private int understandingScore;
         private String profileImgUrl;
+
+        public static UserDto.UserInfosResponse of(User user, UserOnboardingInfo userOnboardingInfo) {
+
+            return UserDto.UserInfosResponse.builder()
+                    .name(user.getName())
+                    .provider(user.getProvider())
+                    .nickname(userOnboardingInfo.getNickname())
+                    .job(userOnboardingInfo.getJob())
+                    .understandingScore(userOnboardingInfo.getUnderstandingScore())
+                    .profileImgUrl(userOnboardingInfo.getProfileImgUrl())
+                    .build();
+        }
     }
 }
