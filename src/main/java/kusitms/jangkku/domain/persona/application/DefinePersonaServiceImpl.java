@@ -1,6 +1,5 @@
 package kusitms.jangkku.domain.persona.application;
 
-
 import kusitms.jangkku.domain.persona.constant.Type;
 import kusitms.jangkku.domain.persona.constant.Keyword;
 import kusitms.jangkku.domain.persona.dao.DefinePersonaKeywordRepository;
