@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -37,7 +38,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
         String message = createClovaRequestMessage(designPersonaRequest);
         String designPersonaDefinition = chatBotService.createDesignPersona(message);
 
-    if (authorizationHeader != null) {
+    if (!Objects.isNull(authorizationHeader)) {
         DesignPersona designPersona = saveDesignPersona(authorizationHeader, designPersonaDefinition, designPersonaRequest.getCareer());
         saveDesignPersonaFields(designPersona, designPersonaRequest.getFields());
         saveDesignPersonaDistinctions(designPersona, designPersonaRequest.getDistinctions());
@@ -46,6 +47,23 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     }
 
         return DesignPersonaDto.DesignPersonaResponse.of(stringUtil.removeQuotesAndBackslashes(designPersonaDefinition));
+    }
+
+    // 설계하기 페르소나 결과를 조회하는 메서드
+    @Override
+    public DesignPersonaDto.DesignPersonaDetailResponse getDesignPersona(String authorizationHeader) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DesignPersona designPersona = designPersonaRepository.findByUser(user);
+        List<DesignPersonaField> designPersonaFields = designPersonaFieldRepository.findAllByDesignPersona(designPersona);
+        List<DesignPersonaDistinction> designPersonaDistinctions = designPersonaDistinctionRepository.findAllByDesignPersona(designPersona);
+        List<DesignPersonaAbility> designPersonaAbilities = designPersonaAbilityRepository.findAllByDesignPersona(designPersona);
+        List<DesignPersonaPlatform> designPersonaPlatforms = designPersonaPlatformRepository.findAllByDesignPersona(designPersona);
+
+        return DesignPersonaDto.DesignPersonaDetailResponse.of(stringUtil.removeQuotesAndBackslashes(designPersona.getDefinition()), designPersonaFields, designPersonaDistinctions, designPersonaAbilities, designPersonaPlatforms, designPersona.getCareer());
     }
 
     // CLOVA로 보낼 메세지를 생성하는 메서드
