@@ -1,9 +1,8 @@
 package kusitms.jangkku.domain.user.domain;
 
 import jakarta.persistence.*;
-import kusitms.jangkku.domain.interest.domain.Interest;
 import kusitms.jangkku.domain.keyword.domain.Keyword;
-import kusitms.jangkku.domain.user.domain.User;
+import kusitms.jangkku.global.common.dao.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,12 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "users_keywords")
-public class UserKeyword {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "users_keywords_id")
-    private Long id;
-
+public class UserKeyword extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", foreignKey = @ForeignKey(name = "users_keywords_fk_users_id"))
     private User user;

@@ -1,6 +1,7 @@
 package kusitms.jangkku.domain.persona.domain;
 
 import jakarta.persistence.*;
+import kusitms.jangkku.global.common.dao.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,12 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "design_personas_abilities")
-public class DesignPersonaAbility {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "design_personas_abilities_id")
-    private Long id;
-
+public class DesignPersonaAbility extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "design_personas_id", foreignKey = @ForeignKey(name = "design_personas_abilities_fk_design_personas_id"))
     private DesignPersona designPersona;
