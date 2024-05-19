@@ -1,11 +1,11 @@
-package kusitms.jangkku.domain.chatbot.dto;
+package kusitms.jangkku.domain.clova.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class ChatBotUserDto {
+public class ClovaUserDto {
 
     @Getter
     @Builder

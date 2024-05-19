@@ -1,6 +1,7 @@
 package kusitms.jangkku.domain.persona.application;
 
-import kusitms.jangkku.domain.chatbot.application.ChatBotService;
+import kusitms.jangkku.domain.clova.application.ClovaService;
+import kusitms.jangkku.domain.clova.application.ClovaServiceImpl;
 import kusitms.jangkku.domain.persona.constant.DesignStage;
 import kusitms.jangkku.domain.persona.dao.*;
 import kusitms.jangkku.domain.persona.domain.*;
@@ -24,7 +25,7 @@ import java.util.UUID;
 public class DesignPersonaServiceImpl implements DesignPersonaService {
     private final StringUtil stringUtil;
     private final JwtUtil jwtUtil;
-    private final ChatBotService chatBotService;
+    private final ClovaService clovaService;
     private final UserRepository userRepository;
     private final DesignPersonaRepository designPersonaRepository;
     private final DesignPersonaFieldRepository designPersonaFieldRepository;
@@ -36,7 +37,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     @Override
     public DesignPersonaDto.DesignPersonaResponse createDesignPersona(String authorizationHeader, DesignPersonaDto.DesignPersonaRequest designPersonaRequest) {
         String message = createClovaRequestMessage(designPersonaRequest);
-        String designPersonaDefinition = chatBotService.createDesignPersona(message);
+        String designPersonaDefinition = clovaService.createDesignPersona(message);
 
     if (!Objects.isNull(authorizationHeader)) {
         DesignPersona designPersona = saveDesignPersona(authorizationHeader, designPersonaDefinition, designPersonaRequest.getCareer());
