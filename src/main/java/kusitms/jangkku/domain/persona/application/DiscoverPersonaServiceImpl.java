@@ -18,6 +18,7 @@ import kusitms.jangkku.global.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,6 +93,21 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         return DiscoverPersonaDto.AnswerResponse.of(reaction, summary);
     }
 
+    // 카테고리별 채팅 내역을 반환하는 메서드
+    @Override
+    public DiscoverPersonaDto.ChattingResponse getChattings(String authorizationHeader, String category) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DiscoverPersona discoverPersona = discoverPersonaRepository.findByUserAndCategory(user, category);
+        List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
+        List<String> stageQuestions = createStageQuestions(category, chattings);
+
+        return DiscoverPersonaDto.ChattingResponse.of(stageQuestions, chattings);
+    }
+
     // 질문 번호를 생성하는 메서드
     private int createNewQuestionNumber(List<Integer> questionNumbers) {
         int randomQuestionNumber = numberUtil.getRandomNumberNotInList(questionNumbers);
@@ -102,7 +118,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // Enum에서 질문 내용을 가져오는 메서드
     private String getQuestionContent(String category, int number) {
-        // Question Enum에서 category와 number에 해당하는 content 찾기
         for (Question question : Question.values()) {
             if (question.getCategory().equals(category) && question.getNumber() == number) {
                 return question.getContent();
@@ -110,5 +125,15 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         }
 
         throw new PersonaException(PersonaErrorResult.NOT_FOUND_QUESTION);
+    }
+
+    // 질문 목록을 생성하는 메서드
+    private List<String> createStageQuestions(String category, List<DiscoverPersonaChatting> chattings) {
+        List<String> stageQuestions = new ArrayList<>();
+        for (DiscoverPersonaChatting discoverPersonaChatting : chattings) {
+            stageQuestions.add(getQuestionContent(category, discoverPersonaChatting.getQuestionNumber()));
+        }
+
+        return stageQuestions;
     }
 }

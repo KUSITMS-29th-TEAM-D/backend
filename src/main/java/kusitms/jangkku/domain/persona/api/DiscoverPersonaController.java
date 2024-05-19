@@ -35,4 +35,15 @@ public class DiscoverPersonaController {
 
         return ApiResponse.onSuccess(PersonaSuccessStatus.CREATED_REACTION_AND_SUMMARY, answerResponse);
     }
+
+    // 돌아보기 페르소나 카테고리별 채팅 내역을 조회하는 API
+    @GetMapping("/discover/chattings")
+    public ResponseEntity<ApiResponse<DiscoverPersonaDto.ChattingResponse>> getChattings(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam("category") String category) {
+
+        DiscoverPersonaDto.ChattingResponse chattingResponse = discoverPersonaService.getChattings(authorizationHeader, category);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_CHATTINGS, chattingResponse);
+    }
 }
