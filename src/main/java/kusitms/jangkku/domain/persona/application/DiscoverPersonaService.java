@@ -6,4 +6,5 @@ public interface DiscoverPersonaService {
     DiscoverPersonaDto.QuestionResponse getNewQuestion(String authorizationHeader, String category);
     DiscoverPersonaDto.AnswerResponse getReactionAndSummary(String authorizationHeader, DiscoverPersonaDto.AnswerRequest answerRequest);
     DiscoverPersonaDto.ChattingResponse getChattings(String authorizationHeader, String category);
+    DiscoverPersonaDto.SummaryResponse getSummaries(String authorizationHeader);
 }
