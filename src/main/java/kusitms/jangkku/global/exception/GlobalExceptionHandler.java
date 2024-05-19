@@ -9,7 +9,9 @@ import kusitms.jangkku.domain.user.exception.UserException;
 import kusitms.jangkku.global.common.ApiResponse;
 import kusitms.jangkku.global.common.code.BaseErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -40,5 +42,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiResponse<BaseErrorCode>> handleS3Exception(S3Exception e) {
         S3ErrorResult errorResult = e.getS3ErrorResult();
         return ApiResponse.onFailure(errorResult);
+    }
+    // Header
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<String> handleMissingHeaderException(MissingRequestHeaderException ex) {
+        String errorMessage = "Required header '" + ex.getHeaderName() + "' is missing";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
 }
