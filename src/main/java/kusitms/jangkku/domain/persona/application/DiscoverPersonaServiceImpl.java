@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.persona.application;
 
+import kusitms.jangkku.domain.clova.application.ClovaService;
 import kusitms.jangkku.domain.persona.constant.Question;
 import kusitms.jangkku.domain.persona.dao.DiscoverPersonaChattingRepository;
 import kusitms.jangkku.domain.persona.dao.DiscoverPersonaRepository;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     private final JwtUtil jwtUtil;
     private final NumberUtil numberUtil;
+    private final ClovaService clovaService;
     private final UserRepository userRepository;
     private final DiscoverPersonaRepository discoverPersonaRepository;
     private final DiscoverPersonaChattingRepository discoverPersonaChattingRepository;
@@ -66,6 +68,28 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         discoverPersonaChattingRepository.save(newDiscoverPersonaChatting);
 
         return DiscoverPersonaDto.QuestionResponse.of(newDiscoverPersonaChatting.getId(), newQuestionContent);
+    }
+
+    // 공감과 요약을 생성해 응답하는 메서드
+    @Override
+    public DiscoverPersonaDto.AnswerResponse getReactionAndSummary(String authorizationHeader, DiscoverPersonaDto.AnswerRequest answerRequest) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DiscoverPersonaChatting discoverPersonaChatting = discoverPersonaChattingRepository.findById(answerRequest.getChattingId())
+                .orElseThrow(() -> new PersonaException(PersonaErrorResult.NOT_FOUND_CHATTING));
+
+        String reaction = clovaService.createDiscoverPersonaReaction(answerRequest.getAnswer());
+        String summary = clovaService.createDiscoverPersonaSummary(answerRequest.getAnswer());
+
+        discoverPersonaChatting.updateAnswer(answerRequest.getAnswer());
+        discoverPersonaChatting.updateReaction(reaction);
+        discoverPersonaChatting.updateSummary(summary);
+        discoverPersonaChattingRepository.save(discoverPersonaChatting);
+
+        return DiscoverPersonaDto.AnswerResponse.of(reaction, summary);
     }
 
     // 질문 번호를 생성하는 메서드

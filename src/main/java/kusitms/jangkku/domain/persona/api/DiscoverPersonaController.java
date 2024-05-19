@@ -14,14 +14,25 @@ import org.springframework.web.bind.annotation.*;
 public class DiscoverPersonaController {
     private final DiscoverPersonaService discoverPersonaService;
 
-    // 설계하기 페르소나를 조회하는 API
+    // 돌아보기 페르소나 질문을 응답 받는 API
     @GetMapping("/discover/question")
-    public ResponseEntity<ApiResponse<DiscoverPersonaDto.QuestionResponse>> getDesignPersona(
+    public ResponseEntity<ApiResponse<DiscoverPersonaDto.QuestionResponse>> getNewQuestion(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam("category") String category) {
 
         DiscoverPersonaDto.QuestionResponse questionResponse = discoverPersonaService.getNewQuestion(authorizationHeader, category);
 
-        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_NEW_QUESTION, questionResponse);
+        return ApiResponse.onSuccess(PersonaSuccessStatus.CREATED_NEW_QUESTION, questionResponse);
+    }
+
+    // 돌아보기 페르소나 공감 & 요약을 응답 받는 API
+    @PostMapping("/discover/answer")
+    public ResponseEntity<ApiResponse<DiscoverPersonaDto.AnswerResponse>> getReactionAndSummary(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody DiscoverPersonaDto.AnswerRequest answerRequest) {
+
+        DiscoverPersonaDto.AnswerResponse answerResponse = discoverPersonaService.getReactionAndSummary(authorizationHeader, answerRequest);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.CREATED_REACTION_AND_SUMMARY, answerResponse);
     }
 }
