@@ -28,4 +28,33 @@ public class DiscoverPersonaDto {
                     .build();
         }
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class AnswerRequest {
+        private Long chattingId;
+        private String answer;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class AnswerResponse {
+        private String reaction;
+        private String summary;
+
+        public static DiscoverPersonaDto.AnswerResponse of(String reaction, String summary) {
+            return DiscoverPersonaDto.AnswerResponse.builder()
+                    .reaction(reaction)
+                    .summary(summary)
+                    .build();
+        }
+    }
 }
