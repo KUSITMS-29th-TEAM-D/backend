@@ -46,4 +46,14 @@ public class DiscoverPersonaController {
 
         return ApiResponse.onSuccess(PersonaSuccessStatus.GET_CHATTINGS, chattingResponse);
     }
+
+    // 돌아보기 페르소나 답변 요약 내역을 조회하는 API
+    @GetMapping("/discover/summaries")
+    public ResponseEntity<ApiResponse<DiscoverPersonaDto.SummaryResponse>> getSummaries(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        DiscoverPersonaDto.SummaryResponse summaryResponse = discoverPersonaService.getSummaries(authorizationHeader);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_SUMMARIES, summaryResponse);
+    }
 }

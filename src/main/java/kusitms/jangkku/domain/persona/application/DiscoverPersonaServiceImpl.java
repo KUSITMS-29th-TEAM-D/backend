@@ -108,6 +108,27 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         return DiscoverPersonaDto.ChattingResponse.of(stageQuestions, chattings);
     }
 
+    // 답변 요약 내역을 반환하는 메서드
+    @Override
+    public DiscoverPersonaDto.SummaryResponse getSummaries(String authorizationHeader) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DiscoverPersona healthDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "건강");
+        DiscoverPersona careerDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "커리어");
+        DiscoverPersona loveDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "사랑");
+        DiscoverPersona leisureDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "여가");
+
+        List<String> healthSummaries = createSummaries(healthDiscoverPersona);
+        List<String> careerSummaries = createSummaries(careerDiscoverPersona);
+        List<String> loveSummaries = createSummaries(loveDiscoverPersona);
+        List<String> leisureSummaries = createSummaries(leisureDiscoverPersona);
+
+        return DiscoverPersonaDto.SummaryResponse.of(healthSummaries, careerSummaries, loveSummaries, leisureSummaries);
+    }
+
     // 질문 번호를 생성하는 메서드
     private int createNewQuestionNumber(List<Integer> questionNumbers) {
         int randomQuestionNumber = numberUtil.getRandomNumberNotInList(questionNumbers);
@@ -135,5 +156,16 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         }
 
         return stageQuestions;
+    }
+
+    // 답변 요약 목록을 반환하는 메서드
+    private List<String> createSummaries(DiscoverPersona discoverPersona) {
+        List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
+        List<String> summaries = new ArrayList<>();
+        for (DiscoverPersonaChatting discoverPersonaChatting : chattings) {
+            summaries.add(discoverPersonaChatting.getSummary());
+        }
+
+        return summaries;
     }
 }
