@@ -10,4 +10,5 @@ public interface DiscoverPersonaRepository extends JpaRepository<DiscoverPersona
     @Query("SELECT dp FROM DiscoverPersona dp WHERE dp.user = :user AND dp.category = :category ORDER BY dp.createdDate DESC")
     DiscoverPersona findTopByUserAndCategoryOrderByCreateDateDesc(@Param("user") User user, @Param("category") String category);
     boolean existsByUserAndCategory(User user, String category);
+    DiscoverPersona findByUserAndCategory(User user, String category);
 }
