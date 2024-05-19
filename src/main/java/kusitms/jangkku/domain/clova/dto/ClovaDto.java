@@ -1,4 +1,4 @@
-package kusitms.jangkku.domain.chatbot.dto;
+package kusitms.jangkku.domain.clova.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -6,7 +6,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 
-public class ChatBotDto {
+public class ClovaDto {
 
     @Builder
     @Getter
@@ -14,13 +14,13 @@ public class ChatBotDto {
     @NoArgsConstructor
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class ChatBotRequestDto {
-        private ArrayList<Message> messages; //
+        private ArrayList<Message> messages;
         private double topP;
         private double temperature;
-        private int maxTokens; //생성되는 텍스트의 최대 길이
-        private double repeatPenalty; //생성되는 텍스트의 최대 길이
+        private int maxTokens;
+        private double repeatPenalty;
 
-        public static ChatBotRequestDto of() {
+        public static ChatBotRequestDto defaultOf() {
             ArrayList<Message> messages = new ArrayList<>();
             messages.add(Message.createDefaultOf());
 
@@ -33,9 +33,9 @@ public class ChatBotDto {
                     .build();
         }
 
-        public static ChatBotRequestDto createDesignPersonaRequest() {
+        public static ChatBotRequestDto DesignPersonaRequestOf() {
             ArrayList<Message> messages = new ArrayList<>();
-            messages.add(Message.createDesignPersonaSystemMessage());
+            messages.add(Message.createDesignPersonaSystemOf());
 
             return ChatBotRequestDto.builder()
                     .messages(messages)
@@ -43,7 +43,6 @@ public class ChatBotDto {
                     .temperature(0.5)
                     .maxTokens(256)
                     .repeatPenalty(5.0)
-
                     .build();
         }
     }

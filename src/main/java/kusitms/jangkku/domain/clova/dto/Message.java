@@ -1,4 +1,4 @@
-package kusitms.jangkku.domain.chatbot.dto;
+package kusitms.jangkku.domain.clova.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -6,11 +6,25 @@ import lombok.Data;
 @Data
 @Builder
 public class Message {
-    private ROLE role; //system,user,assistant
+    private ROLE role;
     private String content;
 
     public enum ROLE {
         system, user, assistant
+    }
+
+    public static Message creatUserOf(String content) {
+        return Message.builder()
+                .role(ROLE.user)
+                .content(content)
+                .build();
+    }
+
+    public static Message creatSystemOf(String content) {
+        return Message.builder()
+                .role(ROLE.system)
+                .content(content)
+                .build();
     }
 
     public static Message createDefaultOf() {
@@ -34,22 +48,7 @@ public class Message {
                 .build();
     }
 
-
-    public static Message creatUserOf(String content) {
-        return Message.builder()
-                .role(ROLE.user)
-                .content(content)
-                .build();
-    }
-
-    public static Message creatSystemOf(String content) {
-        return Message.builder()
-                .role(ROLE.system)
-                .content(content)
-                .build();
-    }
-
-    public static Message createDesignPersonaSystemMessage() {
+    public static Message createDesignPersonaSystemOf() {
         return Message.builder()
                 .role(Message.ROLE.system)
                 .content("<주제>\n" +
