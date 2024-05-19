@@ -75,7 +75,7 @@ public class DiscoverPersonaDto {
 
         public static ChattingResponse of(List<String> questions, List<DiscoverPersonaChatting> chattings) {
             return ChattingResponse.builder()
-                    .stageOne(Stage.of(questions.get(0), chattings.get(0).getAnswer(), chattings.get(0).getReaction()))
+                    .stageOne(!questions.isEmpty() && !chattings.isEmpty() ? Stage.of(questions.get(0), chattings.get(0).getAnswer(), chattings.get(0).getReaction()) : null)
                     .stageTwo(questions.size() > 1 && chattings.size() > 1 ? Stage.of(questions.get(1), chattings.get(1).getAnswer(), chattings.get(1).getReaction()) : null)
                     .stageThree(questions.size() > 2 && chattings.size() > 2 ? Stage.of(questions.get(2), chattings.get(2).getAnswer(), chattings.get(2).getReaction()) : null)
                     .build();
