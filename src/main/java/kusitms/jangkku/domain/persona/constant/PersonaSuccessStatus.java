@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum PersonaSuccessStatus implements BaseCode {
     // 돌아보기 페르소나
-    GET_NEW_QUESTION(HttpStatus.CREATED, "201", "돌아보기 페르소나 질문 생성에 성공했습니다."),
+    CREATED_NEW_QUESTION(HttpStatus.CREATED, "201", "돌아보기 페르소나 질문 생성에 성공했습니다."),
+    CREATED_REACTION_AND_SUMMARY(HttpStatus.CREATED, "201", "돌아보기 페르소나 공감 & 요약 생성에 성공했습니다."),
     // 정의하기 페르소나
     CREATED_DEFINE_PERSONA(HttpStatus.CREATED, "201", "정의하기 페르소나 생성에 성공했습니다."),
     GET_DEFINE_PERSONA(HttpStatus.OK, "200", "정의하기 페르소나 조회에 성공했습니다."),

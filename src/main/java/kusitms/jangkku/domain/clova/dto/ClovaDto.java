@@ -20,19 +20,6 @@ public class ClovaDto {
         private int maxTokens;
         private double repeatPenalty;
 
-        public static ChatBotRequestDto defaultOf() {
-            ArrayList<Message> messages = new ArrayList<>();
-            messages.add(Message.createDefaultOf());
-
-            return ChatBotRequestDto.builder()
-                    .messages(messages)
-                    .topP(0.8)
-                    .temperature(0.5)
-                    .maxTokens(256)
-                    .repeatPenalty(5.0)
-                    .build();
-        }
-
         public static ChatBotRequestDto DesignPersonaRequestOf() {
             ArrayList<Message> messages = new ArrayList<>();
             messages.add(Message.createDesignPersonaSystemOf());
@@ -40,7 +27,33 @@ public class ClovaDto {
             return ChatBotRequestDto.builder()
                     .messages(messages)
                     .topP(0.8)
-                    .temperature(0.5)
+                    .temperature(0.3)
+                    .maxTokens(256)
+                    .repeatPenalty(5.0)
+                    .build();
+        }
+
+        public static ChatBotRequestDto DiscoverPersonaReactionRequestOf() {
+            ArrayList<Message> messages = new ArrayList<>();
+            messages.add(Message.createReactionOf());
+
+            return ChatBotRequestDto.builder()
+                    .messages(messages)
+                    .topP(0.8)
+                    .temperature(0.3)
+                    .maxTokens(256)
+                    .repeatPenalty(5.0)
+                    .build();
+        }
+
+        public static ChatBotRequestDto DiscoverPersonaSummaryRequestOf() {
+            ArrayList<Message> messages = new ArrayList<>();
+            messages.add(Message.createSummaryOf());
+
+            return ChatBotRequestDto.builder()
+                    .messages(messages)
+                    .topP(0.8)
+                    .temperature(0.3)
                     .maxTokens(256)
                     .repeatPenalty(5.0)
                     .build();

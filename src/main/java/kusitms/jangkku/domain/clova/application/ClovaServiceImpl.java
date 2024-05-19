@@ -20,6 +20,33 @@ public class ClovaServiceImpl implements ClovaService {
     private String apiGatewayKey;
     private final WebClient webClient;
 
+    // 설계하기 페르소나를 CLOVA로 생성하는 메서드
+    @Override
+    public String createDesignPersona(String message) {
+        ClovaDto.ChatBotRequestDto request = ClovaDto.ChatBotRequestDto.DesignPersonaRequestOf();
+        request.getMessages().add(Message.creatUserOf(message));
+
+        return requestWebClient(request);
+    }
+
+    // 돌아보기 페르소나 공감을 생성하는 메서드
+    @Override
+    public String createDiscoverPersonaReaction(String message) {
+        ClovaDto.ChatBotRequestDto request = ClovaDto.ChatBotRequestDto.DiscoverPersonaReactionRequestOf();
+        request.getMessages().add(Message.creatUserOf(message));
+
+        return requestWebClient(request);
+    }
+
+    // 돌아보기 페르소나 요약을 생성하는 메서드
+    @Override
+    public String createDiscoverPersonaSummary(String message) {
+        ClovaDto.ChatBotRequestDto request = ClovaDto.ChatBotRequestDto.DiscoverPersonaSummaryRequestOf();
+        request.getMessages().add(Message.creatUserOf(message));
+
+        return requestWebClient(request);
+    }
+
     // CLOVA와 통신하여 답변을 가져오는 메서드
     public String requestWebClient(ClovaDto.ChatBotRequestDto request) {
         ClovaDto.ChatBotResponse message = webClient.post()
@@ -33,15 +60,5 @@ public class ClovaServiceImpl implements ClovaService {
                 .block();
 
         return message.getResult().getMessage().getContent();
-    }
-
-    // 설계하기 페르소나를 CLOVA로 생성하는 메서드
-    public String createDesignPersona(String message) {
-        ClovaDto.ChatBotRequestDto request = ClovaDto.ChatBotRequestDto.DesignPersonaRequestOf();
-        request.getMessages().add(Message.creatUserOf(message));
-        String designPersonaResult = requestWebClient(request);
-        System.out.println(designPersonaResult);
-
-        return designPersonaResult;
     }
 }
