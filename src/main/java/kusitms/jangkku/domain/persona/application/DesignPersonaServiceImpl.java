@@ -1,7 +1,6 @@
 package kusitms.jangkku.domain.persona.application;
 
 import kusitms.jangkku.domain.clova.application.ClovaService;
-import kusitms.jangkku.domain.clova.application.ClovaServiceImpl;
 import kusitms.jangkku.domain.persona.constant.DesignStage;
 import kusitms.jangkku.domain.persona.dao.*;
 import kusitms.jangkku.domain.persona.domain.*;
@@ -58,7 +57,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
 
-        DesignPersona designPersona = designPersonaRepository.findByUser(user);
+        DesignPersona designPersona = designPersonaRepository.findFirstByUserOrderByCreatedDateDesc(user);
         List<DesignPersonaField> designPersonaFields = designPersonaFieldRepository.findAllByDesignPersona(designPersona);
         List<DesignPersonaDistinction> designPersonaDistinctions = designPersonaDistinctionRepository.findAllByDesignPersona(designPersona);
         List<DesignPersonaAbility> designPersonaAbilities = designPersonaAbilityRepository.findAllByDesignPersona(designPersona);

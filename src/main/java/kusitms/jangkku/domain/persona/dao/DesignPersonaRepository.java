@@ -5,5 +5,5 @@ import kusitms.jangkku.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DesignPersonaRepository extends JpaRepository<DesignPersona,Long> {
-    DesignPersona findByUser(User user);
+    DesignPersona findFirstByUserOrderByCreatedDateDesc(User user);
 }
