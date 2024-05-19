@@ -36,4 +36,14 @@ public class DiscoverPersonaChatting extends BaseEntity {
         this.reaction = reaction;
         this.summary = summary;
     }
+    public void updateAnswer(String answer) {
+        this.answer = answer;
+    }
+    public void updateReaction(String reaction) {
+        this.reaction = reaction;
+    }
+
+    public void updateSummary(String summary) {
+        this.summary = summary;
+    }
 }
