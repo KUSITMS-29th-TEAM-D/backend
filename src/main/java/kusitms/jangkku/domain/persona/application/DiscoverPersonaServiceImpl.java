@@ -67,7 +67,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
                 .build();
         discoverPersonaChattingRepository.save(newDiscoverPersonaChatting);
 
-        return DiscoverPersonaDto.QuestionResponse.of(newDiscoverPersonaChatting.getId(), newQuestionContent);
+        return DiscoverPersonaDto.QuestionResponse.of(newDiscoverPersonaChatting.getId(), newQuestionContent, discoverPersona.getIsComplete());
     }
 
     // 공감과 요약을 생성해 응답하는 메서드

@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 public class DiscoverPersonaDto {
     @Builder
     @Getter
@@ -20,11 +18,14 @@ public class DiscoverPersonaDto {
     public static class QuestionResponse {
         private Long chattingId;
         private String question;
+        private Boolean isComplete;
 
-        public static DiscoverPersonaDto.QuestionResponse of(Long chattingId, String question) {
+
+        public static DiscoverPersonaDto.QuestionResponse of(Long chattingId, String question, Boolean isComplete) {
             return DiscoverPersonaDto.QuestionResponse.builder()
                     .chattingId(chattingId)
                     .question(question)
+                    .isComplete(isComplete)
                     .build();
         }
     }
