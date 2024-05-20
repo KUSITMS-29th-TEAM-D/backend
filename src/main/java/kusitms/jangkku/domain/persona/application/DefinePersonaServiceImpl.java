@@ -1,6 +1,5 @@
 package kusitms.jangkku.domain.persona.application;
 
-
 import kusitms.jangkku.domain.persona.constant.Type;
 import kusitms.jangkku.domain.persona.constant.Keyword;
 import kusitms.jangkku.domain.persona.dao.DefinePersonaKeywordRepository;
@@ -30,7 +29,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     private final DefinePersonaRepository definePersonaRepository;
     private final DefinePersonaKeywordRepository definePersonaKeywordRepository;
 
-    // 정의하기 페르소나 결과를 도출하는 메서드
+    // 정의하기 페르소나 결과를 도출하는 메서드 (로그인 유저)
     @Override
     public DefinePersonaDto.DefinePersonaResponse createDefinePersona(String authorizationHeader, DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
         List<String> definePersonaKeywords = new ArrayList<>();
@@ -41,12 +40,23 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
         String definePersonaCode = stepOneKeyword + stepTwoKeyword + stepThreeKeyword;
         String definePersonaName = judgeDefinePersonaName(definePersonaCode);
 
-        DefinePersona definePersona;
-        if (authorizationHeader != null) { // 로그인 유저 저장
-            definePersona = saveDefinePersona(authorizationHeader, definePersonaName, definePersonaCode, definePersonaKeywords);
-        } else {                           // 비로그인 유저 저장
-            definePersona = saveDefinePersonaForSharing(definePersonaName, definePersonaCode, definePersonaKeywords);
-        }
+        DefinePersona definePersona = saveDefinePersona(authorizationHeader, definePersonaName, definePersonaCode, definePersonaKeywords);
+
+        return DefinePersonaDto.DefinePersonaResponse.of(definePersona.getDefinePersonaId(), definePersona.getCode(), definePersonaKeywords);
+    }
+
+    // 정의하기 페르소나 결과를 도출하는 메서드 (비로그인 유저)
+    @Override
+    public DefinePersonaDto.DefinePersonaResponse createDefinePersonaForSharing(DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
+        List<String> definePersonaKeywords = new ArrayList<>();
+        String stepOneKeyword = judgeStepOneType(definePersonaRequest.getStageOneKeywords(), definePersonaKeywords);
+        String stepTwoKeyword = judgeStepTwoType(definePersonaRequest.getStageTwoKeywords(), definePersonaKeywords);
+        String stepThreeKeyword = judgeStepThreeType(definePersonaRequest.getStageThreeKeywords(), definePersonaKeywords);
+
+        String definePersonaCode = stepOneKeyword + stepTwoKeyword + stepThreeKeyword;
+        String definePersonaName = judgeDefinePersonaName(definePersonaCode);
+
+        DefinePersona definePersona = saveDefinePersonaForSharing(definePersonaName, definePersonaCode, definePersonaKeywords);
 
         return DefinePersonaDto.DefinePersonaResponse.of(definePersona.getDefinePersonaId(), definePersona.getCode(), definePersonaKeywords);
     }

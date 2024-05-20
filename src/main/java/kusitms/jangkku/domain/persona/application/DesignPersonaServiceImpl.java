@@ -1,6 +1,6 @@
 package kusitms.jangkku.domain.persona.application;
 
-import kusitms.jangkku.domain.chatbot.application.ChatBotService;
+import kusitms.jangkku.domain.clova.application.ClovaService;
 import kusitms.jangkku.domain.persona.constant.DesignStage;
 import kusitms.jangkku.domain.persona.dao.*;
 import kusitms.jangkku.domain.persona.domain.*;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class DesignPersonaServiceImpl implements DesignPersonaService {
     private final StringUtil stringUtil;
     private final JwtUtil jwtUtil;
-    private final ChatBotService chatBotService;
+    private final ClovaService clovaService;
     private final UserRepository userRepository;
     private final DesignPersonaRepository designPersonaRepository;
     private final DesignPersonaFieldRepository designPersonaFieldRepository;
@@ -35,9 +36,9 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     @Override
     public DesignPersonaDto.DesignPersonaResponse createDesignPersona(String authorizationHeader, DesignPersonaDto.DesignPersonaRequest designPersonaRequest) {
         String message = createClovaRequestMessage(designPersonaRequest);
-        String designPersonaDefinition = chatBotService.createDesignPersona(message);
+        String designPersonaDefinition = clovaService.createDesignPersona(message);
 
-    if (authorizationHeader != null) {
+    if (!Objects.isNull(authorizationHeader)) {
         DesignPersona designPersona = saveDesignPersona(authorizationHeader, designPersonaDefinition, designPersonaRequest.getCareer());
         saveDesignPersonaFields(designPersona, designPersonaRequest.getFields());
         saveDesignPersonaDistinctions(designPersona, designPersonaRequest.getDistinctions());
@@ -46,6 +47,23 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     }
 
         return DesignPersonaDto.DesignPersonaResponse.of(stringUtil.removeQuotesAndBackslashes(designPersonaDefinition));
+    }
+
+    // 설계하기 페르소나 결과를 조회하는 메서드
+    @Override
+    public DesignPersonaDto.DesignPersonaDetailResponse getDesignPersona(String authorizationHeader) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DesignPersona designPersona = designPersonaRepository.findFirstByUserOrderByCreatedDateDesc(user);
+        List<DesignPersonaField> designPersonaFields = designPersonaFieldRepository.findAllByDesignPersona(designPersona);
+        List<DesignPersonaDistinction> designPersonaDistinctions = designPersonaDistinctionRepository.findAllByDesignPersona(designPersona);
+        List<DesignPersonaAbility> designPersonaAbilities = designPersonaAbilityRepository.findAllByDesignPersona(designPersona);
+        List<DesignPersonaPlatform> designPersonaPlatforms = designPersonaPlatformRepository.findAllByDesignPersona(designPersona);
+
+        return DesignPersonaDto.DesignPersonaDetailResponse.of(stringUtil.removeQuotesAndBackslashes(designPersona.getDefinition()), designPersonaFields, designPersonaDistinctions, designPersonaAbilities, designPersonaPlatforms, designPersona.getCareer());
     }
 
     // CLOVA로 보낼 메세지를 생성하는 메서드
