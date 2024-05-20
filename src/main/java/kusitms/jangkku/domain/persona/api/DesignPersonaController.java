@@ -17,7 +17,7 @@ public class DesignPersonaController {
     // 설계하기 페르소나를 생성하는 API
     @PostMapping("/design")
     public ResponseEntity<ApiResponse<DesignPersonaDto.DesignPersonaResponse>> createDesignPersona(
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody DesignPersonaDto.DesignPersonaRequest designPersonaRequest) {
 
         DesignPersonaDto.DesignPersonaResponse designPersonaResponse = designPersonaService.createDesignPersona(authorizationHeader, designPersonaRequest);
