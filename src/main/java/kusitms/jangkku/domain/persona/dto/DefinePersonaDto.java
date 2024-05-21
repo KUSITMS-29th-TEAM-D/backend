@@ -52,11 +52,7 @@ public class DefinePersonaDto {
             Content content = Arrays.stream(Content.values())
                     .filter(desc -> desc.getCode().equals(definePersonaCode))
                     .findFirst()
-                    .orElse(null);
-
-            if (content == null) {
-                throw new PersonaException(PersonaErrorResult.NOT_FOUND_PERSONA_TYPE);
-            }
+                    .orElseThrow(() -> new PersonaException(PersonaErrorResult.NOT_FOUND_PERSONA_TYPE));
 
             return DefinePersonaDto.DefinePersonaResponse.builder()
                     .definePersonaId(String.valueOf(definePersonaId))

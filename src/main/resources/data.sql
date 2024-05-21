@@ -1,3 +1,27 @@
+-- 테스트 유저 삽입
+INSERT INTO users (id, name, provider, provider_id, users_uuid, created_date, updated_date)
+VALUES (100001, '테스트1', 'kakao', '3471511962', UNHEX(REPLACE('159f4542-ebff-4acd-a603-a4fb4c94526a', '-', '')), LOCALTIMESTAMP, LOCALTIMESTAMP),
+       (100002, '테스트2', 'kakao', '3471511963', UNHEX(REPLACE('159f4542-ebff-4acd-a603-a4fb4c94526b', '-', '')), LOCALTIMESTAMP, LOCALTIMESTAMP)
+ON DUPLICATE KEY UPDATE name = VALUES(name);
+
+-- 테스트 유저 온보딩 정보 삽입
+INSERT INTO users_onboarding_infos (users_id, nickname, job, understanding_score, profile_img_url, created_date, updated_date) VALUES
+                                             (100001, '테스트1', '개발자', '100', '1234asdf', LOCALTIMESTAMP, LOCALTIMESTAMP),
+                                             (100002, '테스트2', '개발자', '100', '1234asdf', LOCALTIMESTAMP, LOCALTIMESTAMP)
+ON DUPLICATE KEY UPDATE nickname = VALUES(nickname);
+
+-- 테스트 유저 관심분야 정보 삽입
+INSERT INTO users_interests (id, users_id, interests_id, created_date, updated_date) VALUES
+                                             (100001, 100001, 1, LOCALTIMESTAMP, LOCALTIMESTAMP),
+                                             (100002, 100002, 1, LOCALTIMESTAMP, LOCALTIMESTAMP)
+ON DUPLICATE KEY UPDATE id = VALUES(id);
+
+-- 테스트 유저 키워드 정보 삽입
+INSERT INTO users_keywords (id, users_id, keywords_id, created_date, updated_date) VALUES
+                                             (100001, 100001, 1, LOCALTIMESTAMP, LOCALTIMESTAMP),
+                                             (100002, 100002, 1, LOCALTIMESTAMP, LOCALTIMESTAMP)
+ON DUPLICATE KEY UPDATE id = VALUES(id);
+
 -- 관심 분야 전체 삽입
 INSERT INTO interests (interests_id, name) VALUES
                                                (1, '드로잉'),
