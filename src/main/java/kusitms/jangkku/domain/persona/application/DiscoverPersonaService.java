@@ -8,4 +8,5 @@ public interface DiscoverPersonaService {
     DiscoverPersonaDto.ChattingResponse getChattings(String authorizationHeader, String category);
     DiscoverPersonaDto.SummaryResponse getSummaries(String authorizationHeader);
     void restartChatting(String authorizationHeader, DiscoverPersonaDto.resetChattingRequest resetChattingRequest);
+    DiscoverPersonaDto.CheckCompleteResponse checkComplete(String authorizationHeader);
 }

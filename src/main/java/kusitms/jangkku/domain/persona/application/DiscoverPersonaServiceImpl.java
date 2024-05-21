@@ -42,7 +42,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
         DiscoverPersona discoverPersona;
         if (discoverPersonaRepository.existsByUserAndCategory(user, category)) {
-            discoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, category);
+            discoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, category);
             if (discoverPersona.getIsComplete()) {
                 throw new PersonaException(PersonaErrorResult.IS_ALREADY_COMPLETED);
             }
@@ -101,7 +101,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
 
-        DiscoverPersona discoverPersona = discoverPersonaRepository.findByUserAndCategory(user, category);
+        DiscoverPersona discoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, category);
         List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
         List<String> stageQuestions = createStageQuestions(category, chattings);
 
@@ -116,10 +116,10 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
 
-        DiscoverPersona healthDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "건강");
-        DiscoverPersona careerDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "커리어");
-        DiscoverPersona loveDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "사랑");
-        DiscoverPersona leisureDiscoverPersona = discoverPersonaRepository.findTopByUserAndCategoryOrderByCreateDateDesc(user, "여가");
+        DiscoverPersona healthDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "건강");
+        DiscoverPersona careerDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "커리어");
+        DiscoverPersona loveDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "사랑");
+        DiscoverPersona leisureDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "여가");
 
         List<String> healthSummaries = createSummaries(healthDiscoverPersona);
         List<String> careerSummaries = createSummaries(careerDiscoverPersona);
@@ -142,6 +142,22 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
                 .category(resetChattingRequest.getCategory())
                 .build();
         discoverPersonaRepository.save(newDiscoverPersona);
+    }
+
+    // 카테고리별 대화 완료 여부를 반환하는 메서드
+    @Override
+    public DiscoverPersonaDto.CheckCompleteResponse checkComplete(String authorizationHeader) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DiscoverPersona healthDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "건강");
+        DiscoverPersona careerDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "커리어");
+        DiscoverPersona loveDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "사랑");
+        DiscoverPersona leisureDiscoverPersona = discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, "여가");
+
+        return DiscoverPersonaDto.CheckCompleteResponse.of(healthDiscoverPersona, careerDiscoverPersona, loveDiscoverPersona, leisureDiscoverPersona);
     }
 
     // 질문 번호를 생성하는 메서드

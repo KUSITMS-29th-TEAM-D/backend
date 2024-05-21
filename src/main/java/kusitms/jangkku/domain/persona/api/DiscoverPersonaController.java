@@ -58,7 +58,7 @@ public class DiscoverPersonaController {
     }
 
     // 돌아보기 페르소나 카테고리별 다시하기 API
-    @GetMapping("/discover/reset")
+    @PostMapping("/discover/reset")
     public ResponseEntity<ApiResponse<Object>> restartChatting(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody DiscoverPersonaDto.resetChattingRequest resetChattingRequest) {
@@ -66,5 +66,15 @@ public class DiscoverPersonaController {
         discoverPersonaService.restartChatting(authorizationHeader, resetChattingRequest);
 
         return ApiResponse.onSuccess(PersonaSuccessStatus.SUCCESS_RESET_CHATTING);
+    }
+
+    // 돌아보기 페르소나 대화 완료 여부 조회 API
+    @GetMapping("/discover/complete")
+    public ResponseEntity<ApiResponse<DiscoverPersonaDto.CheckCompleteResponse>> checkComplete(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        DiscoverPersonaDto.CheckCompleteResponse checkCompleteResponse = discoverPersonaService.checkComplete(authorizationHeader);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_IS_COMPLETE, checkCompleteResponse);
     }
 }
