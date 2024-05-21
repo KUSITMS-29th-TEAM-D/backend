@@ -129,6 +129,21 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         return DiscoverPersonaDto.SummaryResponse.of(healthSummaries, careerSummaries, loveSummaries, leisureSummaries);
     }
 
+    // 채팅 다시하기를 위해 테이블을 새롭게 생성하는 메서드
+    @Override
+    public void restartChatting(String authorizationHeader, DiscoverPersonaDto.resetChattingRequest resetChattingRequest) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        DiscoverPersona newDiscoverPersona = DiscoverPersona.builder()
+                .user(user)
+                .category(resetChattingRequest.getCategory())
+                .build();
+        discoverPersonaRepository.save(newDiscoverPersona);
+    }
+
     // 질문 번호를 생성하는 메서드
     private int createNewQuestionNumber(List<Integer> questionNumbers) {
         int randomQuestionNumber = numberUtil.getRandomNumberNotInList(questionNumbers);
