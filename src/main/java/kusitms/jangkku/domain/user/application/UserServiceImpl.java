@@ -17,8 +17,6 @@ import kusitms.jangkku.domain.user.dao.UserInterestRepository;
 import kusitms.jangkku.domain.user.domain.UserInterest;
 import kusitms.jangkku.domain.user.dao.UserKeywordRepository;
 import kusitms.jangkku.domain.user.domain.UserKeyword;
-import kusitms.jangkku.domain.user.exception.UserErrorResult;
-import kusitms.jangkku.domain.user.exception.UserException;
 import kusitms.jangkku.global.util.CookieUtil;
 import kusitms.jangkku.global.util.JwtUtil;
 import kusitms.jangkku.global.util.S3Util;
@@ -108,10 +106,7 @@ public class UserServiceImpl implements UserService {
     // 유저 프로필 사진을 업로드하는 메서드
     @Override
     public void uploadProfileImg(String authorizationHeader, MultipartFile file) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
         String existProfileImgUrl = userOnboardingInfo.getProfileImgUrl();
 
@@ -129,10 +124,7 @@ public class UserServiceImpl implements UserService {
     // 유저 정보를 반환하는 메서드
     @Override
     public UserDto.UserInfosResponse getUserInfos(String authorizationHeader) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
 
         return UserDto.UserInfosResponse.of(user, userOnboardingInfo);
@@ -141,10 +133,7 @@ public class UserServiceImpl implements UserService {
     // 유저 정보를 수정하는 메서드
     @Override
     public UserDto.UserInfosResponse editUserInfos(String authorizationHeader, UserDto.EditUserInfosRequest editUserInfosRequest) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
 
         userOnboardingInfo.updateInfos(editUserInfosRequest.getNickname(), editUserInfosRequest.getJob(), editUserInfosRequest.getUnderstandingScore());

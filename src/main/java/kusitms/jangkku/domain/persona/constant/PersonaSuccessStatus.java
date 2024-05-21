@@ -15,6 +15,7 @@ public enum PersonaSuccessStatus implements BaseCode {
     GET_CHATTINGS(HttpStatus.OK, "200", "채팅 내역 조회에 성공했습니다."),
     GET_SUMMARIES(HttpStatus.OK, "200", "답변 요약 내역 조회에 성공했습니다."),
     SUCCESS_RESET_CHATTING(HttpStatus.OK, "200", "채팅 다시하기에 성공했습니다."),
+    GET_IS_COMPLETE(HttpStatus.OK, "200", "대화 완료 여부 조회에 성공했습니다."),
     // 정의하기 페르소나
     CREATED_DEFINE_PERSONA(HttpStatus.CREATED, "201", "정의하기 페르소나 생성에 성공했습니다."),
     GET_DEFINE_PERSONA(HttpStatus.OK, "200", "정의하기 페르소나 조회에 성공했습니다."),

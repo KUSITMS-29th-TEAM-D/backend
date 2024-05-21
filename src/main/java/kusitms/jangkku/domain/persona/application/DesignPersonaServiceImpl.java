@@ -7,8 +7,6 @@ import kusitms.jangkku.domain.persona.domain.*;
 import kusitms.jangkku.domain.persona.dto.DesignPersonaDto;
 import kusitms.jangkku.domain.user.dao.UserRepository;
 import kusitms.jangkku.domain.user.domain.User;
-import kusitms.jangkku.domain.user.exception.UserErrorResult;
-import kusitms.jangkku.domain.user.exception.UserException;
 import kusitms.jangkku.global.util.JwtUtil;
 import kusitms.jangkku.global.util.StringUtil;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,10 +49,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     // 설계하기 페르소나 결과를 조회하는 메서드
     @Override
     public DesignPersonaDto.DesignPersonaDetailResponse getDesignPersona(String authorizationHeader) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         DesignPersona designPersona = designPersonaRepository.findFirstByUserOrderByCreatedDateDesc(user);
         List<DesignPersonaField> designPersonaFields = designPersonaFieldRepository.findAllByDesignPersona(designPersona);
@@ -86,10 +80,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
 
     // 설계하기 페르소나를 저장하는 메서드
     private DesignPersona saveDesignPersona(String authorizationHeader, String designPersonaDefinition, String career) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         DesignPersona designPersona = DesignPersona.builder()
                 .user(user)

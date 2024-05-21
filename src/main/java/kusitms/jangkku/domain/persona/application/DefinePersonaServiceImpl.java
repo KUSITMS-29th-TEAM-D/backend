@@ -11,8 +11,6 @@ import kusitms.jangkku.domain.persona.exception.PersonaErrorResult;
 import kusitms.jangkku.domain.persona.exception.PersonaException;
 import kusitms.jangkku.domain.user.dao.UserRepository;
 import kusitms.jangkku.domain.user.domain.User;
-import kusitms.jangkku.domain.user.exception.UserErrorResult;
-import kusitms.jangkku.domain.user.exception.UserException;
 import kusitms.jangkku.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,10 +62,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     // 정의하기 페르소나 결과를 반환하는 메서드 (로그인 유저)
     @Override
     public DefinePersonaDto.DefinePersonaResponse getDefinePersona(String authorizationHeader) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         DefinePersona definePersona = definePersonaRepository.findTopByUserOrderByCreatedAtDesc(user); // 가장 최근 결과만 가져옴
 
@@ -166,10 +161,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나를 저장하는 메서드 (로그인 유저)
     private DefinePersona saveDefinePersona(String authorizationHeader, String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         DefinePersona definePersona = DefinePersona.builder()
                 .user(user)
