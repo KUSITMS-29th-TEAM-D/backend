@@ -1,9 +1,14 @@
 package kusitms.jangkku.domain.keyword.domain;
 
 import jakarta.persistence.*;
+import kusitms.jangkku.domain.program.domain.ProgramsImageKeyword;
+import kusitms.jangkku.global.common.dao.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,4 +22,7 @@ public class Keyword {
 
     @Column(name = "name", nullable = false, length = 20)
     private String name;
+
+    @OneToMany(mappedBy = "keyword",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ProgramsImageKeyword> programsImageKeywords = new ArrayList<>();
 }
