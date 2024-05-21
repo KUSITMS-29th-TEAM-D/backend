@@ -33,6 +33,7 @@ public class ProgramDetailDto {
         private String providerName;
         private String providerJob;
         private String providerKeyword;
+        private String type;
 
         //자기이해
         public static ProgramDetailResponseDto of(SelfUnderstanding selfUnderstandings, List<String> userKeywords) {
@@ -49,6 +50,7 @@ public class ProgramDetailDto {
                     .providerName(selfUnderstandings.getProgramProvider().getProviderImage())
                     .providerJob(selfUnderstandings.getProgramProvider().getProviderJob())
                     .providerKeyword(selfUnderstandings.getProgramProvider().getProviderKeyword())
+                    .type("self-understanding")
                     .build();
         }
 
@@ -65,6 +67,7 @@ public class ProgramDetailDto {
                     .providerName(branding.getProgramProvider().getProviderImage())
                     .providerJob(branding.getProgramProvider().getProviderJob())
                     .providerKeyword(branding.getProgramProvider().getProviderKeyword())
+                    .type("branding")
                     .build();
         }
     }
