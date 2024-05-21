@@ -20,6 +20,10 @@ public class ProgramDto {
         private String name;//제목
         private String link;
         private Long programsId;
+        private String type;
+        private int maxPrice;
+        private String form;
+        private int price;
 
         public static ProgrmsMainResponsetDto of(SelfUnderstanding selfUnderstandings) {
             return ProgrmsMainResponsetDto.builder()
@@ -27,6 +31,20 @@ public class ProgramDto {
                     .name(selfUnderstandings.getName())
                     .link(selfUnderstandings.getLink())
                     .programsId(selfUnderstandings.getId())
+                    .type("self-understanding")
+                    .build();
+        }
+
+        public static ProgrmsMainResponsetDto of(SelfUnderstanding selfUnderstandings,int maxPrice) {
+            return ProgrmsMainResponsetDto.builder()
+                    .selfUnderstandingUrl(selfUnderstandings.getSelfUnderstandingUrl())
+                    .name(selfUnderstandings.getName())
+                    .link(selfUnderstandings.getLink())
+                    .programsId(selfUnderstandings.getId())
+                    .type("self-understanding")
+                    .form(selfUnderstandings.getForm().getCode())
+                    .price(selfUnderstandings.getPrice())
+                    .maxPrice(maxPrice)
                     .build();
         }
 
@@ -36,6 +54,7 @@ public class ProgramDto {
                     .name(branding.getName())
                     .link(branding.getLink())
                     .programsId(branding.getId())
+                    .type("branding")
                     .build();
         }
     }
@@ -45,8 +64,8 @@ public class ProgramDto {
     @AllArgsConstructor
     @Getter
     public static class ProgramSelfUnderstandingRequestDto {
-        private int startPrice;
-        private int endPrice;
+        private Integer startPrice;
+        private Integer endPrice;
         private String form;//온라인,오프라인,온/오프라인
     }
 
