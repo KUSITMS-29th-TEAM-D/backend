@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.program.application;
 
+import kusitms.jangkku.domain.program.constant.FORM;
 import kusitms.jangkku.domain.program.dao.BrandingRepository;
 import kusitms.jangkku.domain.program.dao.SelfUnderstandingsRepository;
 import kusitms.jangkku.domain.program.domain.Branding;
@@ -55,14 +56,22 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto) {
-//        if (requestDto.getForm())
-        return findAllSelfUnderstanding();
+        int maxPrice = selfUnderstandingsRepository.findTopByOrderByPriceDesc().getPrice();
+        Integer endPrice = requestDto.getEndPrice();
+        if (endPrice == null) endPrice = maxPrice;
+
+        if (requestDto.getForm() != null) {
+            return selfUnderstandingsRepository.findByPriceBetweenAndForm(requestDto.getStartPrice(), endPrice, FORM.ofCode(requestDto.getForm()))
+                    .stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v, maxPrice)).collect(Collectors.toList());
+        }
+
+        return selfUnderstandingsRepository.findByPriceBetween(requestDto.getStartPrice(), endPrice)
+                .stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v, maxPrice)).collect(Collectors.toList());
     }
 
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
         List<Branding> brandings = findAllBrandingByUsersKeywordsAndInterests(authorizationHeader);
-
         if (requestDto.getInterest() != null && requestDto.getImageKeywords() != null) {
             brandings = brandings.stream().filter(v -> v.getProgramsInterests().stream().anyMatch(h -> requestDto.getInterest().contains(h.getInterest().getName())) &&
                     v.getProgramsImageKeywords().stream().anyMatch(q -> requestDto.getImageKeywords().contains(q.getKeyword().getName()))).collect(Collectors.toList());
@@ -71,16 +80,16 @@ public class ProgramServiceImpl implements ProgramService {
         } else if (requestDto.getInterest() == null && requestDto.getImageKeywords() != null) {
             brandings.stream().filter(v -> v.getProgramsImageKeywords().stream().anyMatch(h -> requestDto.getImageKeywords().contains(h.getKeyword().getName())));
         }
-        return brandings.stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v)).collect(Collectors.toList());
+        return brandings.stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
     }
 
     @Override
-    public ProgramDetailDto.ProgramDetailResponseDto getDetailProgram(String authorizationHeader, Long programId, String form) {
+    public ProgramDetailDto.ProgramDetailResponseDto getDetailProgram(String authorizationHeader, Long programId, String type) {
         UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
         User user = findUserByUUID(userId);
-        if (form.equals("self-understanding")) {
+        if (type.equals("self-understanding")) {
             return ProgramDetailDto.ProgramDetailResponseDto.of(findSelfUnderStandingById(programId), findAllUserKeyword(user));
-        } else if (form.equals("branding")) {
+        } else if (type.equals("branding")) {
             return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), findAllUserKeyword(user));
         } else throw new ProgramException(NOT_FOUND_PROGRAM);
     }
@@ -94,12 +103,9 @@ public class ProgramServiceImpl implements ProgramService {
         return brandingRepository.findById(id).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
     }
 
-    private List<ProgramDto.ProgrmsMainResponsetDto> findAllSelfUnderstanding() {
-        return selfUnderstandingsRepository.findAllByOrderByCreatedDateDesc().stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
-    }
-
-    private List<ProgramDto.ProgrmsMainResponsetDto> findAllFormSelfUnderstanding() {
-        return null;
+    private List<SelfUnderstanding> findAllSelfUnderstanding() {
+        return selfUnderstandingsRepository.findAllByOrderByCreatedDateDesc()
+                .orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
     }
 
     private List<String> findAllUserKeyword(User user) {
