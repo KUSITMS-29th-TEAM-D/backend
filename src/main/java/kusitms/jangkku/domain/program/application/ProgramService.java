@@ -12,7 +12,7 @@ public interface ProgramService {
 
     List<ProgramDto.ProgrmsMainResponsetDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto);
 
-    List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(ProgramDto.ProgramBrandingRequestDto requestDto);
+    List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(String authorizationHeader,ProgramDto.ProgramBrandingRequestDto requestDto);
 
-    ProgramDetailDto.ProgramDetailResponseDto getDetailProgram(String authorizationHeader, Long programId, String form);
+    ProgramDetailDto.ProgramDetailResponseDto getDetailProgram(String authorizationHeader, Long programId, String type);
 }

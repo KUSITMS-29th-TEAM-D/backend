@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ProgramErrorResult implements BaseErrorCode {
-    NOT_FOUND_PROGRAM(HttpStatus.NOT_FOUND, "404", "존재하지 않는 프로그램 페이지입니다.");
-    
+    NOT_FOUND_PROGRAM(HttpStatus.NOT_FOUND, "404", "존재하지 않는 프로그램 페이지입니다."),
+    PROGRAM_ENUM_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "요청하신 ENUM TYPE을 찾을 수 없습니다.");
+
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

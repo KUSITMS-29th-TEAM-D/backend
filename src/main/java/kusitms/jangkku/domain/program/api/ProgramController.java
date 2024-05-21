@@ -1,10 +1,9 @@
 package kusitms.jangkku.domain.program.api;
 
+import kusitms.jangkku.domain.program.application.ProgramService;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
-import kusitms.jangkku.domain.program.dto.ProgramDto;
 import kusitms.jangkku.domain.program.application.ProgramServiceImpl;
 import kusitms.jangkku.global.common.ApiResponse;
-import kusitms.jangkku.global.common.code.BaseCode;
 import kusitms.jangkku.global.common.constant.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ import static kusitms.jangkku.domain.program.dto.ProgramDto.*;
 @RequiredArgsConstructor
 public class ProgramController {
 
-    private final ProgramServiceImpl programService;
+    private final ProgramService programService;
 
     //자기이해 조회 - 전체
     @GetMapping("/main/self-understanding")
@@ -41,15 +40,15 @@ public class ProgramController {
 
     //브랜딩 조회 - 필터링
     @PostMapping("/more/branding")
-    private ResponseEntity<ApiResponse<List<ProgrmsMainResponsetDto>>> findMoreSelfUnderstanding(@RequestBody ProgramBrandingRequestDto requestDto) {
-        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getMoreBranding(requestDto));
+    private ResponseEntity<ApiResponse<List<ProgrmsMainResponsetDto>>> findMoreSelfUnderstanding(@RequestHeader("Authorization") String authorizationHeader,@RequestBody ProgramBrandingRequestDto requestDto) {
+        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getMoreBranding(authorizationHeader,requestDto));
     }
 
     //프로그램 상세조회
-    @GetMapping("/{form}/{programId}")
+    @GetMapping("/{type}/{program_id}")
     private ResponseEntity<ApiResponse<ProgramDetailDto.ProgramDetailResponseDto>> findDetailProgram(@RequestHeader("Authorization") String authorizationHeader,
-                                                                                                     @PathVariable(name = "form") String form,@PathVariable(name = "program_id") Long programId) {
-        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getDetailProgram(authorizationHeader, programId, form));
+                                                                                                     @PathVariable(name = "type") String type,@PathVariable(name = "program_id") Long programId) {
+        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getDetailProgram(authorizationHeader, programId, type));
     }
 
 }
