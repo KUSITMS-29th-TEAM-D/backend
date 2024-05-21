@@ -20,7 +20,7 @@ public class DesignPersona extends BaseEntity {
     @Column(name = "career", nullable = false, length = 20)
     private String career;
 
-    @Column(name = "definition", nullable = false, length = 100)
+    @Column(name = "definition", nullable = false, length = 200)
     private String definition;
 
     @Builder

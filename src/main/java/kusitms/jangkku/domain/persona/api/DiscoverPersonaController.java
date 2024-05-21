@@ -56,4 +56,15 @@ public class DiscoverPersonaController {
 
         return ApiResponse.onSuccess(PersonaSuccessStatus.GET_SUMMARIES, summaryResponse);
     }
+
+    // 돌아보기 페르소나 카테고리별 다시하기 API
+    @GetMapping("/discover/reset")
+    public ResponseEntity<ApiResponse<Object>> restartChatting(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody DiscoverPersonaDto.resetChattingRequest resetChattingRequest) {
+
+        discoverPersonaService.restartChatting(authorizationHeader, resetChattingRequest);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.SUCCESS_RESET_CHATTING);
+    }
 }

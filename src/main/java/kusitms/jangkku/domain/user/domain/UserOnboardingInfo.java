@@ -16,10 +16,10 @@ public class UserOnboardingInfo extends BaseEntity {
     @JoinColumn(name = "users_id", foreignKey = @ForeignKey(name = "users_onboarding_infos_fk_users_id"))
     private User user;
 
-    @Column(name = "nickname", nullable = false, length = 20)
+    @Column(name = "nickname", nullable = false, length = 100)
     private String nickname;
 
-    @Column(name = "job", nullable = false, length = 10)
+    @Column(name = "job", nullable = false, length = 50)
     private String job;
 
     @Column(name = "understanding_score", nullable = false, length = 10)

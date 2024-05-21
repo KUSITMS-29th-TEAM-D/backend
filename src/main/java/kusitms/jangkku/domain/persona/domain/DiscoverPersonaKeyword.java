@@ -16,7 +16,7 @@ public class DiscoverPersonaKeyword extends BaseEntity {
     @JoinColumn(name = "discover_personas_id", foreignKey = @ForeignKey(name = "discover_personas_keywords_fk_discover_personas_id"))
     private DiscoverPersona discoverPersona;
 
-    @Column(name = "name", nullable = false, length = 20)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
     @Column(name = "frequency", nullable = false)
