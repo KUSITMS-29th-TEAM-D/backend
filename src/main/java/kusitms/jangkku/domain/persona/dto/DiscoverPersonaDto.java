@@ -3,6 +3,7 @@ package kusitms.jangkku.domain.persona.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import kusitms.jangkku.domain.persona.domain.DiscoverPersona;
 import kusitms.jangkku.domain.persona.domain.DiscoverPersonaChatting;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DiscoverPersonaDto {
     @Builder
@@ -132,5 +134,27 @@ public class DiscoverPersonaDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class resetChattingRequest {
         private String category;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class CheckCompleteResponse {
+        private boolean healthComplete;
+        private boolean careerComplete;
+        private boolean loveComplete;
+        private boolean leisureComplete;
+
+        public static DiscoverPersonaDto.CheckCompleteResponse of(DiscoverPersona healthComplete, DiscoverPersona careerComplete, DiscoverPersona loveComplete, DiscoverPersona leisureComplete) {
+            return CheckCompleteResponse.builder()
+                    .healthComplete(!Objects.isNull(healthComplete) && healthComplete.getIsComplete())
+                    .careerComplete(!Objects.isNull(careerComplete) && careerComplete.getIsComplete())
+                    .loveComplete(!Objects.isNull(loveComplete) && loveComplete.getIsComplete())
+                    .leisureComplete(!Objects.isNull(leisureComplete) && leisureComplete.getIsComplete())
+                    .build();
+        }
     }
 }
