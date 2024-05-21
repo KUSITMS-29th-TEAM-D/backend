@@ -87,6 +87,11 @@ clova:
     api-key: ${CLOVA_API_KEY}
     api-gateway-key: ${CLOVA_API_GATEWAY_KEY}
     request-id: ${CLOVA_REQUEST_ID}
+  prompt:
+    discover:
+      reaction: ${REACTION_PROMPT}
+      summary: ${SUMMARY_PROMPT}
+    design: ${DESIGN_PERSONA_PROMPT}
 
 cloud:
   aws:
