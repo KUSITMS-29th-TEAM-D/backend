@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.program.api;
 
+import kusitms.jangkku.domain.program.application.ProgramService;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
 import kusitms.jangkku.domain.program.application.ProgramServiceImpl;
 import kusitms.jangkku.global.common.ApiResponse;
@@ -17,7 +18,7 @@ import static kusitms.jangkku.domain.program.dto.ProgramDto.*;
 @RequiredArgsConstructor
 public class ProgramController {
 
-    private final ProgramServiceImpl programService;
+    private final ProgramService programService;
 
     //자기이해 조회 - 전체
     @GetMapping("/main/self-understanding")
@@ -44,10 +45,10 @@ public class ProgramController {
     }
 
     //프로그램 상세조회
-    @GetMapping("/{form}/{programId}")
+    @GetMapping("/{type}/{program_id}")
     private ResponseEntity<ApiResponse<ProgramDetailDto.ProgramDetailResponseDto>> findDetailProgram(@RequestHeader("Authorization") String authorizationHeader,
-                                                                                                     @PathVariable(name = "form") String form,@PathVariable(name = "program_id") Long programId) {
-        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getDetailProgram(authorizationHeader, programId, form));
+                                                                                                     @PathVariable(name = "type") String type,@PathVariable(name = "program_id") Long programId) {
+        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getDetailProgram(authorizationHeader, programId, type));
     }
 
 }
