@@ -38,19 +38,13 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMainSelfUnderstanding() {
-        return selfUnderstandingsRepository.findTop9ByOrderByCreatedDateDesc()
-                .stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
+        return selfUnderstandingsRepository.findTop9ByOrderByCreatedDateDesc().stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
     }
 
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMainBranding(String authorizationHeader) {
-        UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
-        List<String> keywords = findAllUserKeyword(findUserByUUID(userId)); //유저의 키워드
-        System.out.println("kewords : " + keywords);
-        List<String> interests = findAllUserInterest(findUserByUUID(userId));//유저의 관심분야
-        System.out.println("interests : " + interests);
         //브랜딩 프로그램에서 유저의 관심분야와 키워드
-        return findAllBrandingByUsersKeywordsAndInterests(keywords, interests);
+        return findAllBrandingByUsersKeywordsAndInterests(authorizationHeader).stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
     }
 
     private UUID findUserIdFromauthorizationHeader(String authorizationHeader) {
@@ -66,9 +60,18 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(ProgramDto.ProgramBrandingRequestDto requestDto) {
+    public List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
+        List<Branding> brandings = findAllBrandingByUsersKeywordsAndInterests(authorizationHeader);
 
-        return null;
+        if (requestDto.getInterest() != null && requestDto.getImageKeywords() != null) {
+            brandings = brandings.stream().filter(v -> v.getProgramsInterests().stream().anyMatch(h -> requestDto.getInterest().contains(h.getInterest().getName())) &&
+                    v.getProgramsImageKeywords().stream().anyMatch(q -> requestDto.getImageKeywords().contains(q.getKeyword().getName()))).collect(Collectors.toList());
+        } else if (requestDto.getInterest() != null && requestDto.getImageKeywords() == null) {
+            brandings = brandings.stream().filter(v -> v.getProgramsInterests().stream().anyMatch(h -> requestDto.getInterest().contains(h.getInterest().getName()))).collect(Collectors.toList());
+        } else if (requestDto.getInterest() == null && requestDto.getImageKeywords() != null) {
+            brandings.stream().filter(v -> v.getProgramsImageKeywords().stream().anyMatch(h -> requestDto.getImageKeywords().contains(h.getKeyword().getName())));
+        }
+        return brandings.stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v)).collect(Collectors.toList());
     }
 
     @Override
@@ -100,18 +103,18 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     private List<String> findAllUserKeyword(User user) {
-        return userKeywordRepository.findAllByUser(user)
-                .stream().map(v -> v.getKeyword().getName()).toList();
+        return userKeywordRepository.findAllByUser(user).stream().map(v -> v.getKeyword().getName()).toList();
     }
 
     private List<String> findAllUserInterest(User user) {
-        return userInterestRepository.findAllByUser(user)
-                .stream().map(v -> v.getInterest().getName()).toList();
+        return userInterestRepository.findAllByUser(user).stream().map(v -> v.getInterest().getName()).toList();
     }
 
-    private List<ProgramDto.ProgrmsMainResponsetDto> findAllBrandingByUsersKeywordsAndInterests(List<String> keywords, List<String> interests) {
-        return brandingRepository.findByProgramsImageKeywordsInOrProgramsInterestsIn(keywords, interests)
-                .stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
+    private List<Branding> findAllBrandingByUsersKeywordsAndInterests(String authorizationHeader) {
+        UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
+        List<String> keywords = findAllUserKeyword(findUserByUUID(userId)); //유저의 키워드
+        List<String> interests = findAllUserInterest(findUserByUUID(userId));//유저의 관심분야
+        return brandingRepository.findByProgramsImageKeywordsInOrProgramsInterestsIn(keywords, interests);
     }
 
     private User findUserByUUID(UUID userId) {
