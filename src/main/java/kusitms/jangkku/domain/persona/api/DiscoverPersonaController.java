@@ -77,4 +77,14 @@ public class DiscoverPersonaController {
 
         return ApiResponse.onSuccess(PersonaSuccessStatus.GET_IS_COMPLETE, checkCompleteResponse);
     }
+
+    // 돌아보기 페르소나 키워드 전체 조회 API
+    @GetMapping("/discover/keywords")
+    public ResponseEntity<ApiResponse<DiscoverPersonaDto.KeywordResponse>> getAllKeywords(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        DiscoverPersonaDto.KeywordResponse keywordResponse = discoverPersonaService.getAllKeywords(authorizationHeader);
+
+        return ApiResponse.onSuccess(PersonaSuccessStatus.GET_ALL_KEYWORDS, keywordResponse);
+    }
 }
