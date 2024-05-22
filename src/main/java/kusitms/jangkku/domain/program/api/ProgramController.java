@@ -3,6 +3,7 @@ package kusitms.jangkku.domain.program.api;
 import kusitms.jangkku.domain.program.application.ProgramService;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
 import kusitms.jangkku.domain.program.application.ProgramServiceImpl;
+import kusitms.jangkku.domain.program.dto.ProgramsHomeDto;
 import kusitms.jangkku.global.common.ApiResponse;
 import kusitms.jangkku.global.common.constant.SuccessStatus;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,16 @@ public class ProgramController {
     private ResponseEntity<ApiResponse<ProgramDetailDto.ProgramDetailResponseDto>> findDetailProgram(@RequestHeader("Authorization") String authorizationHeader,
                                                                                                      @PathVariable(name = "type") String type,@PathVariable(name = "program_id") Long programId) {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getDetailProgram(authorizationHeader, programId, type));
+    }
+
+    @PostMapping("/home/self-understanding")
+    private ResponseEntity<ApiResponse<List<ProgramsHomeDto.ProgramsHomeResponseDto>>> findHomeSelfUnderstanding(@RequestHeader("Authorization") String authorizationHeader,@RequestBody ProgramSelfUnderstandingRequestDto requestDto) {
+        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getHomeSelfUnderstanding(authorizationHeader,requestDto));
+    }
+
+    @PostMapping("/home/branding")
+    private ResponseEntity<ApiResponse<List<ProgramsHomeDto.ProgramsHomeResponseDto>>> findHomeSelfUnderstanding(@RequestHeader("Authorization") String authorizationHeader,@RequestBody ProgramBrandingRequestDto requestDto) {
+        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getHomeBranding(authorizationHeader,requestDto));
     }
 
 }
