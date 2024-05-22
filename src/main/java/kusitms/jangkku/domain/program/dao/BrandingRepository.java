@@ -15,4 +15,6 @@ public interface BrandingRepository extends JpaRepository<Branding, Long> {
             "WHERE pik.keyword.name IN :keywords " +
             "OR pi.interest.name IN :interests")
     List<Branding> findByProgramsImageKeywordsInOrProgramsInterestsIn(@Param("keywords") List<String> keywords, @Param("interests") List<String> interests);
+
+    List<Branding> findTop5ByOrderByCreatedDateDesc();
 }

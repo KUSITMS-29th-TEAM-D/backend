@@ -46,7 +46,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMainBranding(String authorizationHeader) {
         //브랜딩 프로그램에서 유저의 관심분야와 키워드
-        return findAllBrandingByUsersKeywordsAndInterests(authorizationHeader).stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
+        return findAllBrandingByUsersKeywordsAndInterests(authorizationHeader).stream().limit(9).map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
     }
 
     private UUID findUserIdFromauthorizationHeader(String authorizationHeader) {
@@ -93,6 +93,11 @@ public class ProgramServiceImpl implements ProgramService {
     public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
         List<Branding> brandings = findBrandingsByFilter(authorizationHeader, requestDto);
         return brandings.stream().limit(5).map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBrandingNonLogin(ProgramDto.ProgramBrandingRequestDto requestDto) {
+        return brandingRepository.findTop5ByOrderByCreatedDateDesc().stream().map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
     }
 
     private List<SelfUnderstanding> findSelfUnderstandingByFilter(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto, int maxPrice) {
