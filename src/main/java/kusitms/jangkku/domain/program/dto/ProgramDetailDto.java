@@ -2,15 +2,12 @@ package kusitms.jangkku.domain.program.dto;
 
 import kusitms.jangkku.domain.program.constant.FORM;
 import kusitms.jangkku.domain.program.domain.Branding;
-import kusitms.jangkku.domain.program.domain.ProgramProvider;
 import kusitms.jangkku.domain.program.domain.SelfUnderstanding;
-import kusitms.jangkku.domain.user.domain.UserKeyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramDetailDto {
@@ -20,12 +17,12 @@ public class ProgramDetailDto {
     @AllArgsConstructor
     @Getter
     public static class ProgramDetailResponseDto {
-        private String imageUrl; //썸네일 이미지
-        private String name;//제목
-        private String oneLineDescription;//한줄소개
+        private String imageUrl; // 썸네일 이미지
+        private String name;// 제목
+        private String oneLineDescription;// 한줄소개
         private int price;
         private FORM form;
-        private String descriptionUrl;//소개 이미지
+        private String descriptionUrl;// 소개 이미지
         private String link;
         private List<String> keywords;
         private int participants;
@@ -36,8 +33,8 @@ public class ProgramDetailDto {
         private String type;
         private boolean isApply;
 
-        //자기이해
-        public static ProgramDetailResponseDto of(SelfUnderstanding selfUnderstandings, List<String> userKeywords,int participants,boolean isApply) {
+        // 자기이해
+        public static ProgramDetailResponseDto of(SelfUnderstanding selfUnderstandings, List<String> userKeywords, int participants, boolean isApply) {
             return ProgramDetailResponseDto.builder()
                     .imageUrl(selfUnderstandings.getSelfUnderstandingUrl())
                     .name(selfUnderstandings.getName())
@@ -48,7 +45,7 @@ public class ProgramDetailDto {
                     .link(selfUnderstandings.getLink())
                     .keywords(userKeywords)
                     .providerImage(selfUnderstandings.getProgramProvider().getProviderImage())
-                    .providerName(selfUnderstandings.getProgramProvider().getProviderImage())
+                    .providerName(selfUnderstandings.getProgramProvider().getProviderName())
                     .providerJob(selfUnderstandings.getProgramProvider().getProviderJob())
                     .providerKeyword(selfUnderstandings.getProgramProvider().getProviderKeyword())
                     .type("self-understanding")
@@ -57,8 +54,8 @@ public class ProgramDetailDto {
                     .build();
         }
 
-        //브랜딩
-        public static ProgramDetailResponseDto of(Branding branding, List<String> userKeywords,int participants,boolean isApply) {
+        // 브랜딩
+        public static ProgramDetailResponseDto of(Branding branding, List<String> userKeywords, int participants, boolean isApply) {
             return ProgramDetailResponseDto.builder()
                     .imageUrl(branding.getBrandingUrl())
                     .name(branding.getName())
@@ -67,7 +64,7 @@ public class ProgramDetailDto {
                     .link(branding.getLink())
                     .keywords(userKeywords)
                     .providerImage(branding.getProgramProvider().getProviderImage())
-                    .providerName(branding.getProgramProvider().getProviderImage())
+                    .providerName(branding.getProgramProvider().getProviderName())
                     .providerJob(branding.getProgramProvider().getProviderJob())
                     .providerKeyword(branding.getProgramProvider().getProviderKeyword())
                     .type("branding")
@@ -76,10 +73,4 @@ public class ProgramDetailDto {
                     .build();
         }
     }
-
-
-
-
-
-
 }
