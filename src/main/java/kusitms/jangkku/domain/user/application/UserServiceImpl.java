@@ -2,6 +2,7 @@ package kusitms.jangkku.domain.user.application;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import kusitms.jangkku.domain.interest.dao.InterestRepository;
 import kusitms.jangkku.domain.interest.domain.Interest;
 import kusitms.jangkku.domain.keyword.dao.KeywordRepository;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
 
     // 기본 정보까지 추가하여 신규 유저를 등록하는 메서드
     @Override
+    @Transactional
     public UserDto.UserRegisterResponse registerUser(HttpServletResponse response, String authorizationHeader, UserDto.UserRegisterRequest userRegisterRequest) {
         // 토큰을 이용하여 사용자 정보 추출
         String registerToken = jwtUtil.getTokenFromHeader(authorizationHeader);
@@ -99,12 +101,14 @@ public class UserServiceImpl implements UserService {
 
     // 닉네임 중복 여부를 판단하는 메서드
     @Override
+    @Transactional
     public boolean isDuplicate(String nickname) {
         return userOnboardingInfoRepository.findByNickname(nickname) != null;
     }
 
     // 유저 프로필 사진을 업로드하는 메서드
     @Override
+    @Transactional
     public void uploadProfileImg(String authorizationHeader, MultipartFile file) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
@@ -123,6 +127,7 @@ public class UserServiceImpl implements UserService {
 
     // 유저 정보를 반환하는 메서드
     @Override
+    @Transactional
     public UserDto.UserInfosResponse getUserInfos(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
@@ -132,6 +137,7 @@ public class UserServiceImpl implements UserService {
 
     // 유저 정보를 수정하는 메서드
     @Override
+    @Transactional
     public UserDto.UserInfosResponse editUserInfos(String authorizationHeader, UserDto.EditUserInfosRequest editUserInfosRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
@@ -150,7 +156,8 @@ public class UserServiceImpl implements UserService {
     }
 
     // 사용자의 관심 분야를 저장하는 메서드
-    private void saveUserInterests(User user, List<String> interestList) {
+    @Transactional
+    protected void saveUserInterests(User user, List<String> interestList) {
         if (interestList != null && !interestList.isEmpty()) {
             for (String interestName : interestList) {
                 // 관심 분야 이름으로 관심 분야 엔티티를 찾음
@@ -167,7 +174,8 @@ public class UserServiceImpl implements UserService {
     }
 
     // 사용자의 키워드를 저장하는 메서드
-    private void saveUserKeywords(User user, List<String> keywordList) {
+    @Transactional
+    protected void saveUserKeywords(User user, List<String> keywordList) {
         if (keywordList != null && !keywordList.isEmpty()) {
             for (String keywordName : keywordList) {
                 // 키워드 이름으로 키워드 엔티티를 찾음
