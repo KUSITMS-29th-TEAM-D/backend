@@ -58,7 +58,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         List<Integer> questionNumbers = discoverPersonaChattingRepository.findQuestionNumbersByDiscoverPersona(discoverPersona);
         int newQuestionNumber = createNewQuestionNumber(questionNumbers);
         if (questionNumbers.size() == 3) {
-            discoverPersona.updateComplete(); // 완료 처리
+            discoverPersona.updateComplete(true); // 완료 처리
             discoverPersonaRepository.save(discoverPersona);
         }
         String newQuestionContent = getQuestionContent(category, newQuestionNumber);
@@ -107,6 +107,14 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
         DiscoverPersona discoverPersona = getDiscoverPersona(user, category);
         List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
+        // 미완료된 대화가 있다면 제거
+        for (DiscoverPersonaChatting chatting : chattings) {
+            if (Objects.isNull(chatting.getAnswer())) {
+                discoverPersonaChattingRepository.delete(chatting);
+                discoverPersona.updateComplete(false); // 미완료 처리
+            }
+        }
+
         List<String> stageQuestions = createStageQuestions(category, chattings);
 
         return DiscoverPersonaDto.ChattingResponse.of(stageQuestions, chattings);
