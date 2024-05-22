@@ -23,5 +23,4 @@ public enum FORM {
                 .findAny()
                 .orElseThrow(() -> new ProgramException(ProgramErrorResult.PROGRAM_ENUM_NOT_FOUND));
     }
-
 }
