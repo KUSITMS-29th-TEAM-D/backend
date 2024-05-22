@@ -34,9 +34,10 @@ public class ProgramDetailDto {
         private String providerJob;
         private String providerKeyword;
         private String type;
+        private boolean isApply;
 
         //자기이해
-        public static ProgramDetailResponseDto of(SelfUnderstanding selfUnderstandings, List<String> userKeywords) {
+        public static ProgramDetailResponseDto of(SelfUnderstanding selfUnderstandings, List<String> userKeywords,int participants,boolean isApply) {
             return ProgramDetailResponseDto.builder()
                     .imageUrl(selfUnderstandings.getSelfUnderstandingUrl())
                     .name(selfUnderstandings.getName())
@@ -51,11 +52,13 @@ public class ProgramDetailDto {
                     .providerJob(selfUnderstandings.getProgramProvider().getProviderJob())
                     .providerKeyword(selfUnderstandings.getProgramProvider().getProviderKeyword())
                     .type("self-understanding")
+                    .participants(participants)
+                    .isApply(isApply)
                     .build();
         }
 
         //브랜딩
-        public static ProgramDetailResponseDto of(Branding branding, List<String> userKeywords) {
+        public static ProgramDetailResponseDto of(Branding branding, List<String> userKeywords,int participants,boolean isApply) {
             return ProgramDetailResponseDto.builder()
                     .imageUrl(branding.getBrandingUrl())
                     .name(branding.getName())
@@ -68,6 +71,8 @@ public class ProgramDetailDto {
                     .providerJob(branding.getProgramProvider().getProviderJob())
                     .providerKeyword(branding.getProgramProvider().getProviderKeyword())
                     .type("branding")
+                    .participants(participants)
+                    .isApply(isApply)
                     .build();
         }
     }

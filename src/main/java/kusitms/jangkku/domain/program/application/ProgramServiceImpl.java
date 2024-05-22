@@ -71,10 +71,14 @@ public class ProgramServiceImpl implements ProgramService {
     public ProgramDetailDto.ProgramDetailResponseDto getDetailProgram(String authorizationHeader, Long programId, String type) {
 
         User user = findUserByUUID(authorizationHeader);
+        boolean isApply = verifyCanApplyPrograms(user, type, programId);
+        int participants;
         if (type.equals("self-understanding")) {
-            return ProgramDetailDto.ProgramDetailResponseDto.of(findSelfUnderStandingById(programId), findAllUserKeyword(user));
+            participants = findSelfUnderstandingById(programId).getProgramParticipants().size();
+            return ProgramDetailDto.ProgramDetailResponseDto.of(findSelfUnderStandingById(programId), findAllUserKeyword(user), participants, isApply);
         } else if (type.equals("branding")) {
-            return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), findAllUserKeyword(user));
+            participants=findBrandingById(programId).getProgramParticipants().size();
+            return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), findAllUserKeyword(user),participants, isApply);
         } else throw new ProgramException(NOT_FOUND_PROGRAM);
     }
 
@@ -103,33 +107,35 @@ public class ProgramServiceImpl implements ProgramService {
         String programsType = requestDto.getType();
         Long programId = requestDto.getProgramId();
 
-        if (verifyCanApplyPrograms(user, programsType, programId)){
+        if (verifyCanApplyPrograms(user, programsType, programId)) {
             throw new ProgramException(ALREADY_USER_APPLY_PROGRAM);
         }
 
         if (programsType.equals("branding")) {
-            Branding branding = brandingRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
-            programParticipantsRepository.save(ProgramParticipants.toEntity(user, branding));
+            programParticipantsRepository.save(ProgramParticipants.toEntity(user, findBrandingById(programId)));
         } else if (programsType.equals("self-understanding")) {
-            SelfUnderstanding selfUnderstanding = selfUnderstandingsRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
-            programParticipantsRepository.save(ProgramParticipants.toEntity(user, selfUnderstanding));
+            programParticipantsRepository.save(ProgramParticipants.toEntity(user, findSelfUnderstandingById(programId)));
         } else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
     }
 
     private boolean verifyCanApplyPrograms(User user, String programsType, Long programId) {
         if (programsType.equals("branding")) {
-            Branding branding = brandingRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
-            return programParticipantsRepository.existsByUserAndBranding(user, branding);
+            return programParticipantsRepository.existsByUserAndBranding(user,findBrandingById(programId));
         } else if (programsType.equals("self-understanding")) {
-            SelfUnderstanding selfUnderstanding = selfUnderstandingsRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
-            return programParticipantsRepository.existsByUserAndSelfUnderstanding(user, selfUnderstanding);
+            return programParticipantsRepository.existsByUserAndSelfUnderstanding(user, findSelfUnderstandingById(programId));
         } else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
+    }
+
+    private SelfUnderstanding findSelfUnderstandingById(Long programId) {
+        return selfUnderstandingsRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
     }
 
     private User findUserByUUID(String authorizationHeader) {
         UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
         return findUserByUUID(userId);
     }
+
+
 
     private UUID findUserIdFromauthorizationHeader(String authorizationHeader) {
         String token = jwtUtil.getTokenFromHeader(authorizationHeader);
