@@ -30,7 +30,8 @@ public class DiscoverPersona extends BaseEntity {
         this.isComplete = false;
     }
 
-    public void updateComplete() {
-        this.isComplete = true;
+    public void updateComplete(Boolean isComplete) {
+        this.isComplete = isComplete;
     }
+
 }
