@@ -1,8 +1,9 @@
 package kusitms.jangkku.domain.program.api;
 
+import kusitms.jangkku.domain.persona.constant.PersonaSuccessStatus;
 import kusitms.jangkku.domain.program.application.ProgramService;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
-import kusitms.jangkku.domain.program.application.ProgramServiceImpl;
+import kusitms.jangkku.domain.program.dto.ProgramDto;
 import kusitms.jangkku.domain.program.dto.ProgramsHomeDto;
 import kusitms.jangkku.global.common.ApiResponse;
 import kusitms.jangkku.global.common.constant.SuccessStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static kusitms.jangkku.domain.program.constant.ProgramSuccessStatus.PROGRAM_APPLY_CREATED;
 import static kusitms.jangkku.domain.program.dto.ProgramDto.*;
 
 @RestController
@@ -68,6 +70,13 @@ public class ProgramController {
     @PostMapping("/branding/non-login")
     private ResponseEntity<ApiResponse<List<ProgramsHomeDto.ProgramsHomeResponseDto>>> findHomeBrandingNonLogin(@RequestBody ProgramBrandingRequestDto requestDto) {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getHomeBrandingNonLogin(requestDto));
+    }
+
+    //프로그램 신청하기
+    @PostMapping("/apply")
+    private ResponseEntity<ApiResponse<Object>> applyPrograms(@RequestHeader("Authorization") String authorizationHeader, @RequestBody ProgramDto.ProgramJoinRequestDto requestDto) {
+        programService.applyPrograms(authorizationHeader,requestDto);
+        return ApiResponse.onSuccess(PROGRAM_APPLY_CREATED);
     }
 
 }

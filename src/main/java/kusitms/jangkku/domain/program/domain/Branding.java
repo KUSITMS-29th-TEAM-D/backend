@@ -39,4 +39,8 @@ public class Branding extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_provdiers_id", foreignKey = @ForeignKey(name = "branding_programs_program_provdiers_id"))
     private ProgramProvider programProvider;
+
+    @OneToMany(mappedBy = "branding",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ProgramParticipants> programParticipants = new ArrayList<>();
+
 }

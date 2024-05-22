@@ -2,6 +2,8 @@ package kusitms.jangkku.global.exception;
 
 import kusitms.jangkku.domain.persona.exception.PersonaErrorResult;
 import kusitms.jangkku.domain.persona.exception.PersonaException;
+import kusitms.jangkku.domain.program.exception.ProgramErrorResult;
+import kusitms.jangkku.domain.program.exception.ProgramException;
 import kusitms.jangkku.domain.token.exception.TokenErrorResult;
 import kusitms.jangkku.domain.token.exception.TokenException;
 import kusitms.jangkku.domain.user.exception.UserErrorResult;
@@ -48,5 +50,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> handleMissingHeaderException(MissingRequestHeaderException ex) {
         String errorMessage = "Required header '" + ex.getHeaderName() + "' is missing";
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    }
+
+    // Program
+    @ExceptionHandler(ProgramException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleProgramException(ProgramException e) {
+        ProgramErrorResult errorResult = e.getProgramErrorResult();
+        return ApiResponse.onFailure(errorResult);
     }
 }

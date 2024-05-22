@@ -1,9 +1,12 @@
 package kusitms.jangkku.domain.user.domain;
 
 import jakarta.persistence.*;
+import kusitms.jangkku.domain.program.domain.ProgramParticipants;
 import kusitms.jangkku.global.common.dao.BaseEntity;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +25,10 @@ public class User extends BaseEntity {
 
     @Column(name = "provider_id", nullable = false, length = 50)
     private String providerId;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ProgramParticipants> programParticipants = new ArrayList<>();
+
 
     @Builder
     public User(UUID userId, String name, String provider, String providerId) {
