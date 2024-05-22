@@ -86,13 +86,13 @@ public class ProgramServiceImpl implements ProgramService {
         UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
         User user = findUserByUUID(userId);
 
-        return findSelfUnderstandingByFilter(requestDto, maxPrice).stream().limit(100).map(v -> ProgramsHomeDto.ProgramsHomeResponseDto.of(v, maxPrice, findAllUserKeyword(user))).collect(Collectors.toList());
+        return findSelfUnderstandingByFilter(requestDto, maxPrice).stream().limit(5).map(v -> ProgramsHomeDto.ProgramsHomeResponseDto.of(v, maxPrice, findAllUserKeyword(user))).collect(Collectors.toList());
     }
 
     @Override
     public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
         List<Branding> brandings = findBrandingsByFilter(authorizationHeader, requestDto);
-        return brandings.stream().map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
+        return brandings.stream().limit(5).map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
     }
 
     private List<SelfUnderstanding> findSelfUnderstandingByFilter(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto, int maxPrice) {
