@@ -180,8 +180,22 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         return DiscoverPersonaDto.KeywordResponse.of(topKeywords);
     }
 
+    // 특정 카테고리에서 상위 6개의 키워드를 반환하는 메서드
+    @Override
+    @Transactional
+    public DiscoverPersonaDto.KeywordResponse getCategoryKeywords(String authorizationHeader, String category) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+        List<DiscoverPersonaKeyword> keywords = collectCategoryKeywords(user, category);
+
+        // 상위 6개 키워드만 반환
+        List<String> topKeywords = getTopKeywords(keywords);
+
+        return DiscoverPersonaDto.KeywordResponse.of(topKeywords);
+    }
+
     // 모든 카테고리의 키워드를 반환하는 메서드
-    private List<DiscoverPersonaKeyword> collectKeywords(User user) {
+    @Transactional
+    protected List<DiscoverPersonaKeyword> collectKeywords(User user) {
         List<DiscoverPersonaKeyword> allKeywords = new ArrayList<>();
 
         String[] categories = {"건강", "커리어", "사랑", "여가"};
@@ -195,6 +209,17 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         return allKeywords;
     }
 
+    // 특정 카테고리의 키워드를 반환하는 메서드
+    @Transactional
+    protected List<DiscoverPersonaKeyword> collectCategoryKeywords(User user, String category) {
+        DiscoverPersona persona = getDiscoverPersona(user, category);
+        if (persona != null && persona.getIsComplete()) {
+            return getKeywordsFromPersona(persona);
+        } else {
+            throw new PersonaException(PersonaErrorResult.NOT_FOUND_KEYWORDS);
+        }
+    }
+
     // 카테고리별 돌아보기 페르소나를 반환하는 메서드
     @Transactional
     protected DiscoverPersona getDiscoverPersona(User user, String category) {
@@ -206,6 +231,8 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     protected List<DiscoverPersonaKeyword> getKeywordsFromPersona(DiscoverPersona persona) {
         return discoverPersonaKeywordRepository.findAllByDiscoverPersona(persona);
     }
+
+
 
     // 빈도 수를 기준으로, 상위 6개의 키워드만 반환하는 메서드
     private List<String> getTopKeywords(List<DiscoverPersonaKeyword> keywords) {
