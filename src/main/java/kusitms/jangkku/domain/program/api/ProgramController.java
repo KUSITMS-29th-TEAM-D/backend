@@ -52,14 +52,22 @@ public class ProgramController {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getDetailProgram(authorizationHeader, programId, type));
     }
 
+    //메인페이지 자기이해 조회
     @PostMapping("/home/self-understanding")
     private ResponseEntity<ApiResponse<List<ProgramsHomeDto.ProgramsHomeResponseDto>>> findHomeSelfUnderstanding(@RequestHeader("Authorization") String authorizationHeader,@RequestBody ProgramSelfUnderstandingRequestDto requestDto) {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getHomeSelfUnderstanding(authorizationHeader,requestDto));
     }
 
+    //메인페이지 브랜딩 조회
     @PostMapping("/home/branding")
     private ResponseEntity<ApiResponse<List<ProgramsHomeDto.ProgramsHomeResponseDto>>> findHomeSelfUnderstanding(@RequestHeader("Authorization") String authorizationHeader,@RequestBody ProgramBrandingRequestDto requestDto) {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getHomeBranding(authorizationHeader,requestDto));
+    }
+
+    //메인페이지 비로그인 브랜딩 조회
+    @PostMapping("/branding/non-login")
+    private ResponseEntity<ApiResponse<List<ProgramsHomeDto.ProgramsHomeResponseDto>>> findHomeBrandingNonLogin(@RequestBody ProgramBrandingRequestDto requestDto) {
+        return ApiResponse.onSuccess(SuccessStatus._OK, programService.getHomeBrandingNonLogin(requestDto));
     }
 
 }
