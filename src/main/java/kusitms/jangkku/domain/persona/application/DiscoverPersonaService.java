@@ -12,4 +12,5 @@ public interface DiscoverPersonaService {
     void restartChatting(String authorizationHeader, DiscoverPersonaDto.resetChattingRequest resetChattingRequest);
     DiscoverPersonaDto.CheckCompleteResponse checkComplete(String authorizationHeader);
     DiscoverPersonaDto.KeywordResponse getAllKeywords(String authorizationHeader);
+    DiscoverPersonaDto.KeywordResponse getCategoryKeywords(String authorizationHeader, String category);
 }
