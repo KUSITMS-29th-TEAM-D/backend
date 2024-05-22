@@ -77,4 +77,13 @@ public class ProgramDto {
         List<String> interest;
         List<String> imageKeywords;
     }
+
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    public static class ProgramJoinRequestDto {
+        String type;
+        Long programId;
+    }
 }
