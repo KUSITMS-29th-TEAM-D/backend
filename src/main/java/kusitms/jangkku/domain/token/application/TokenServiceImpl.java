@@ -3,6 +3,7 @@ package kusitms.jangkku.domain.token.application;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
 import kusitms.jangkku.domain.token.domain.RefreshToken;
 import kusitms.jangkku.domain.token.dto.TokenDto;
@@ -31,7 +32,9 @@ public class TokenServiceImpl implements TokenService {
     private final JwtUtil jwtUtil;
     private final CookieUtil cookieUtil;
 
+    // 리프레쉬 토큰을 재발행하는 메서드
     @Override
+    @Transactional
     public TokenDto.TokenResponse reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = cookieUtil.getCookie(request);
         String refreshToken = cookie.getValue();

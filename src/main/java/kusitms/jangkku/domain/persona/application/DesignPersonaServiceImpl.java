@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.persona.application;
 
+import jakarta.transaction.Transactional;
 import kusitms.jangkku.domain.clova.application.ClovaService;
 import kusitms.jangkku.domain.persona.constant.DesignStage;
 import kusitms.jangkku.domain.persona.dao.*;
@@ -31,6 +32,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
 
     // 설계하기 페르소나 결과를 도출하는 메서드
     @Override
+    @Transactional
     public DesignPersonaDto.DesignPersonaResponse createDesignPersona(String authorizationHeader, DesignPersonaDto.DesignPersonaRequest designPersonaRequest) {
         String message = createClovaRequestMessage(designPersonaRequest);
         String designPersonaDefinition = clovaService.createDesignPersona(message);
@@ -48,6 +50,7 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
 
     // 설계하기 페르소나 결과를 조회하는 메서드
     @Override
+    @Transactional
     public DesignPersonaDto.DesignPersonaDetailResponse getDesignPersona(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -79,7 +82,8 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     }
 
     // 설계하기 페르소나를 저장하는 메서드
-    private DesignPersona saveDesignPersona(String authorizationHeader, String designPersonaDefinition, String career) {
+    @Transactional
+    protected DesignPersona saveDesignPersona(String authorizationHeader, String designPersonaDefinition, String career) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         DesignPersona designPersona = DesignPersona.builder()
@@ -93,7 +97,8 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     }
 
     // 설계하기 페르소나 분야를 저장하는 메서드
-    public void saveDesignPersonaFields(DesignPersona designPersona, List<String> fields) {
+    @Transactional
+    protected void saveDesignPersonaFields(DesignPersona designPersona, List<String> fields) {
         for (String field : fields) {
             DesignPersonaField designPersonaField = DesignPersonaField.builder()
                     .designPersona(designPersona)
@@ -104,7 +109,8 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     }
 
     // 설계하기 페르소나 특징을 저장하는 메서드
-    public void saveDesignPersonaDistinctions(DesignPersona designPersona, List<String> distinctions) {
+    @Transactional
+    protected void saveDesignPersonaDistinctions(DesignPersona designPersona, List<String> distinctions) {
         for (String distinction : distinctions) {
             DesignPersonaDistinction designPersonaDistinction = DesignPersonaDistinction.builder()
                     .designPersona(designPersona)
@@ -115,7 +121,8 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     }
 
     // 설계하기 페르소나 강점을 저장하는 메서드
-    public void saveDesignPersonaAbilities(DesignPersona designPersona, List<String> abilities) {
+    @Transactional
+    protected void saveDesignPersonaAbilities(DesignPersona designPersona, List<String> abilities) {
         for (String ability : abilities) {
             DesignPersonaAbility designPersonaAbility = DesignPersonaAbility.builder()
                     .designPersona(designPersona)
@@ -126,7 +133,8 @@ public class DesignPersonaServiceImpl implements DesignPersonaService {
     }
 
     // 설계하기 페르소나 플랫폼을 저장하는 메서드
-    public void saveDesignPersonaPlatforms(DesignPersona designPersona, List<String> platforms) {
+    @Transactional
+    protected void saveDesignPersonaPlatforms(DesignPersona designPersona, List<String> platforms) {
         for (String platform : platforms) {
             DesignPersonaPlatform designPersonaPlatform = DesignPersonaPlatform.builder()
                     .designPersona(designPersona)

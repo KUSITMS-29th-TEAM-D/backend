@@ -91,6 +91,7 @@ clova:
     discover:
       reaction: ${REACTION_PROMPT}
       summary: ${SUMMARY_PROMPT}
+      keyword: ${KEYWORD_PROMPT}
     design: ${DESIGN_PERSONA_PROMPT}
 
 cloud:

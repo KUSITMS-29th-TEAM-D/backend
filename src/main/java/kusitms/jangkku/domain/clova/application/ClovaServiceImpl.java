@@ -47,6 +47,15 @@ public class ClovaServiceImpl implements ClovaService {
         return requestWebClient(request);
     }
 
+    // 돌아보기 페르소나 키워드를 생성하는 메서드
+    @Override
+    public String createDiscoverPersonaKeywords(String message) {
+        ClovaDto.ChatBotRequestDto request = ClovaDto.ChatBotRequestDto.DiscoverPersonaKeywordRequestOf();
+        request.getMessages().add(Message.creatUserOf(message));
+
+        return requestWebClient(request);
+    }
+
     // CLOVA와 통신하여 답변을 가져오는 메서드
     public String requestWebClient(ClovaDto.ChatBotRequestDto request) {
         ClovaDto.ChatBotResponse message = webClient.post()

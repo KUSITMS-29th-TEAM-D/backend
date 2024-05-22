@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.persona.application;
 
+import jakarta.transaction.Transactional;
 import kusitms.jangkku.domain.persona.constant.Type;
 import kusitms.jangkku.domain.persona.constant.Keyword;
 import kusitms.jangkku.domain.persona.dao.DefinePersonaKeywordRepository;
@@ -9,7 +10,6 @@ import kusitms.jangkku.domain.persona.domain.DefinePersonaKeyword;
 import kusitms.jangkku.domain.persona.dto.DefinePersonaDto;
 import kusitms.jangkku.domain.persona.exception.PersonaErrorResult;
 import kusitms.jangkku.domain.persona.exception.PersonaException;
-import kusitms.jangkku.domain.user.dao.UserRepository;
 import kusitms.jangkku.domain.user.domain.User;
 import kusitms.jangkku.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +23,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DefinePersonaServiceImpl implements DefinePersonaService {
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
     private final DefinePersonaRepository definePersonaRepository;
     private final DefinePersonaKeywordRepository definePersonaKeywordRepository;
 
     // 정의하기 페르소나 결과를 도출하는 메서드 (로그인 유저)
     @Override
+    @Transactional
     public DefinePersonaDto.DefinePersonaResponse createDefinePersona(String authorizationHeader, DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
         List<String> definePersonaKeywords = new ArrayList<>();
         String stepOneKeyword = judgeStepOneType(definePersonaRequest.getStageOneKeywords(), definePersonaKeywords);
@@ -45,6 +45,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 도출하는 메서드 (비로그인 유저)
     @Override
+    @Transactional
     public DefinePersonaDto.DefinePersonaResponse createDefinePersonaForSharing(DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
         List<String> definePersonaKeywords = new ArrayList<>();
         String stepOneKeyword = judgeStepOneType(definePersonaRequest.getStageOneKeywords(), definePersonaKeywords);
@@ -61,6 +62,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 반환하는 메서드 (로그인 유저)
     @Override
+    @Transactional
     public DefinePersonaDto.DefinePersonaResponse getDefinePersona(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -80,6 +82,7 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 반환하는 메서드 (비로그인 유저)
     @Override
+    @Transactional
     public DefinePersonaDto.DefinePersonaResponse getDefinePersonaForSharing(String definePersonaId) {
 
         DefinePersona definePersona = definePersonaRepository.findByDefinePersonaId(UUID.fromString(definePersonaId)); // 고유 id로 검색
@@ -160,7 +163,8 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     }
 
     // 정의하기 페르소나를 저장하는 메서드 (로그인 유저)
-    private DefinePersona saveDefinePersona(String authorizationHeader, String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
+    @Transactional
+    protected DefinePersona saveDefinePersona(String authorizationHeader, String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         DefinePersona definePersona = DefinePersona.builder()
@@ -182,7 +186,8 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     }
 
     // 정의하기 페르소나를 저장하는 메서드 (비로그인 유저)
-    private DefinePersona saveDefinePersonaForSharing(String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
+    @Transactional
+    protected DefinePersona saveDefinePersonaForSharing(String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
 
         DefinePersona definePersona = DefinePersona.builder()
                 .name(definePersonaName)

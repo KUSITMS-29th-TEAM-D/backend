@@ -10,5 +10,7 @@ import java.util.List;
 public interface DiscoverPersonaChattingRepository extends JpaRepository<DiscoverPersonaChatting,Long> {
     @Query("SELECT dc.questionNumber FROM DiscoverPersonaChatting dc WHERE dc.discoverPersona = :discoverPersona")
     List<Integer> findQuestionNumbersByDiscoverPersona(DiscoverPersona discoverPersona);
+    @Query("SELECT dc.summary FROM DiscoverPersonaChatting dc WHERE dc.discoverPersona = :discoverPersona")
+    List<String> findSummariesByDiscoverPersona(DiscoverPersona discoverPersona);
     List<DiscoverPersonaChatting> findAllByDiscoverPersonaOrderByCreatedDateAsc(DiscoverPersona discoverPersona);
 }
