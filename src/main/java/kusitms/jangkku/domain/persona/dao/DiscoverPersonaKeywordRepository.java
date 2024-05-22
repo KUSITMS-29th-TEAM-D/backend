@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface DiscoverPersonaKeywordRepository extends JpaRepository<DiscoverPersonaKeyword,Long> {
     List<DiscoverPersonaKeyword> findAllByDiscoverPersona(DiscoverPersona discoverPersona);
+    DiscoverPersonaKeyword findByDiscoverPersonaAndName(DiscoverPersona discoverPersona, String name);
 }

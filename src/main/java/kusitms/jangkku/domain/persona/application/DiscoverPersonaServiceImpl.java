@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.persona.application;
 
+import jakarta.transaction.Transactional;
 import kusitms.jangkku.domain.clova.application.ClovaService;
 import kusitms.jangkku.domain.persona.constant.Question;
 import kusitms.jangkku.domain.persona.dao.DiscoverPersonaChattingRepository;
@@ -14,11 +15,13 @@ import kusitms.jangkku.domain.persona.exception.PersonaException;
 import kusitms.jangkku.domain.user.domain.User;
 import kusitms.jangkku.global.util.JwtUtil;
 import kusitms.jangkku.global.util.NumberUtil;
+import kusitms.jangkku.global.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     private final JwtUtil jwtUtil;
     private final NumberUtil numberUtil;
+    private final StringUtil stringUtil;
     private final ClovaService clovaService;
     private final DiscoverPersonaRepository discoverPersonaRepository;
     private final DiscoverPersonaChattingRepository discoverPersonaChattingRepository;
@@ -33,6 +37,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 질문을 새롭게 생성하며 채팅을 시작하는 메서드
     @Override
+    @Transactional
     public DiscoverPersonaDto.QuestionResponse getNewQuestion(String authorizationHeader, String category) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -69,6 +74,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 공감과 요약을 생성해 응답하는 메서드
     @Override
+    @Transactional
     public DiscoverPersonaDto.AnswerResponse getReactionAndSummary(String authorizationHeader, DiscoverPersonaDto.AnswerRequest answerRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -85,11 +91,17 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
         DiscoverPersona discoverPersona = discoverPersonaChatting.getDiscoverPersona();
 
+        // 대화가 완료된 경우 키워드 생성
+        if (discoverPersona.getIsComplete()) {
+            createPersonaKeywords(discoverPersona);
+        }
+
         return DiscoverPersonaDto.AnswerResponse.of(reaction, summary);
     }
 
     // 카테고리별 채팅 내역을 반환하는 메서드
     @Override
+    @Transactional
     public DiscoverPersonaDto.ChattingResponse getChattings(String authorizationHeader, String category) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -102,6 +114,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 답변 요약 내역을 반환하는 메서드
     @Override
+    @Transactional
     public DiscoverPersonaDto.SummaryResponse getSummaries(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -120,6 +133,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 채팅 다시하기를 위해 테이블을 새롭게 생성하는 메서드
     @Override
+    @Transactional
     public void restartChatting(String authorizationHeader, DiscoverPersonaDto.resetChattingRequest resetChattingRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -132,6 +146,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 카테고리별 대화 완료 여부를 반환하는 메서드
     @Override
+    @Transactional
     public DiscoverPersonaDto.CheckCompleteResponse checkComplete(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -145,6 +160,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 모든 카테고리에서 상위 6개의 키워드를 반환하는 메서드
     @Override
+    @Transactional
     public DiscoverPersonaDto.KeywordResponse getAllKeywords(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -172,12 +188,14 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 카테고리별 돌아보기 페르소나를 반환하는 메서드
-    private DiscoverPersona getDiscoverPersona(User user, String category) {
+    @Transactional
+    protected DiscoverPersona getDiscoverPersona(User user, String category) {
         return discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, category);
     }
 
     // 페르소나에 해당하는 키워드를 찾아 반환하는 메서드
-    private List<DiscoverPersonaKeyword> getKeywordsFromPersona(DiscoverPersona persona) {
+    @Transactional
+    protected List<DiscoverPersonaKeyword> getKeywordsFromPersona(DiscoverPersona persona) {
         return discoverPersonaKeywordRepository.findAllByDiscoverPersona(persona);
     }
 
@@ -220,7 +238,8 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 답변 요약 목록을 반환하는 메서드
-    private List<String> createSummaries(DiscoverPersona discoverPersona) {
+    @Transactional
+    protected List<String> createSummaries(DiscoverPersona discoverPersona) {
         List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
         List<String> summaries = new ArrayList<>();
         for (DiscoverPersonaChatting discoverPersonaChatting : chattings) {
@@ -228,5 +247,33 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         }
 
         return summaries;
+    }
+
+    // 페르소나 키워드를 생성하고 저장하는 메서드
+    @Transactional
+    protected void createPersonaKeywords(DiscoverPersona discoverPersona) {
+        List<String> summaries = discoverPersonaChattingRepository.findSummariesByDiscoverPersona(discoverPersona);
+        String clovaRequestText = stringUtil.joinWithNewLine(summaries);
+        String keywordResponse = clovaService.createDiscoverPersonaKeywords(clovaRequestText);
+        String[] keywords = keywordResponse.split(",");
+
+        for (String keyword : keywords) {
+            processKeyword(discoverPersona, keyword.trim());
+        }
+    }
+
+    // 새로 뽑아낸 키워드를 업데이트 or 저장하는 메서드
+    @Transactional
+    protected void processKeyword(DiscoverPersona discoverPersona, String name) {
+        DiscoverPersonaKeyword personaKeyword = discoverPersonaKeywordRepository.findByDiscoverPersonaAndName(discoverPersona, name);
+        if (!Objects.isNull(personaKeyword)) {
+            personaKeyword.increaseFrequency();
+        } else {
+            personaKeyword = DiscoverPersonaKeyword.builder()
+                    .discoverPersona(discoverPersona)
+                    .name(name)
+                    .build();
+        }
+        discoverPersonaKeywordRepository.save(personaKeyword);
     }
 }
