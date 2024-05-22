@@ -58,6 +58,19 @@ public class ClovaDto {
                     .repeatPenalty(5.0)
                     .build();
         }
+
+        public static ChatBotRequestDto DiscoverPersonaKeywordRequestOf() {
+            ArrayList<Message> messages = new ArrayList<>();
+            messages.add(Message.createKeywordOf());
+
+            return ChatBotRequestDto.builder()
+                    .messages(messages)
+                    .topP(0.8)
+                    .temperature(0.3)
+                    .maxTokens(256)
+                    .repeatPenalty(5.0)
+                    .build();
+        }
     }
 
     @Builder
