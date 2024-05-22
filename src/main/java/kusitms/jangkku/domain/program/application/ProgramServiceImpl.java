@@ -2,8 +2,10 @@ package kusitms.jangkku.domain.program.application;
 
 import kusitms.jangkku.domain.program.constant.FORM;
 import kusitms.jangkku.domain.program.dao.BrandingRepository;
+import kusitms.jangkku.domain.program.dao.ProgramParticipantsRepository;
 import kusitms.jangkku.domain.program.dao.SelfUnderstandingsRepository;
 import kusitms.jangkku.domain.program.domain.Branding;
+import kusitms.jangkku.domain.program.domain.ProgramParticipants;
 import kusitms.jangkku.domain.program.domain.SelfUnderstanding;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
 import kusitms.jangkku.domain.program.dto.ProgramDto;
@@ -23,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static kusitms.jangkku.domain.program.exception.ProgramErrorResult.NOT_FOUND_PROGRAM;
+import static kusitms.jangkku.domain.program.exception.ProgramErrorResult.*;
 import static kusitms.jangkku.domain.user.exception.UserErrorResult.NOT_FOUND_USER;
 
 @Service
@@ -37,6 +39,7 @@ public class ProgramServiceImpl implements ProgramService {
     private final BrandingRepository brandingRepository;
     private final UserInterestRepository userInterestRepository;
     private final UserRepository userRepository;
+    private final ProgramParticipantsRepository programParticipantsRepository;
 
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMainSelfUnderstanding() {
@@ -49,11 +52,6 @@ public class ProgramServiceImpl implements ProgramService {
         return findAllBrandingByUsersKeywordsAndInterests(authorizationHeader).stream().limit(9).map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
     }
 
-    private UUID findUserIdFromauthorizationHeader(String authorizationHeader) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        jwtUtil.getUserIdFromToken(token);
-        return UUID.fromString(jwtUtil.getUserIdFromToken(token));
-    }
 
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto) {
@@ -71,8 +69,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public ProgramDetailDto.ProgramDetailResponseDto getDetailProgram(String authorizationHeader, Long programId, String type) {
-        UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
-        User user = findUserByUUID(userId);
+
+        User user = findUserByUUID(authorizationHeader);
         if (type.equals("self-understanding")) {
             return ProgramDetailDto.ProgramDetailResponseDto.of(findSelfUnderStandingById(programId), findAllUserKeyword(user));
         } else if (type.equals("branding")) {
@@ -83,8 +81,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeSelfUnderstanding(String authorizationHeader, ProgramDto.ProgramSelfUnderstandingRequestDto requestDto) {
         int maxPrice = selfUnderstandingsRepository.findTopByOrderByPriceDesc().getPrice();
-        UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
-        User user = findUserByUUID(userId);
+        User user = findUserByUUID(authorizationHeader);
 
         return findSelfUnderstandingByFilter(requestDto, maxPrice).stream().limit(5).map(v -> ProgramsHomeDto.ProgramsHomeResponseDto.of(v, maxPrice, findAllUserKeyword(user))).collect(Collectors.toList());
     }
@@ -98,6 +95,46 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBrandingNonLogin(ProgramDto.ProgramBrandingRequestDto requestDto) {
         return brandingRepository.findTop5ByOrderByCreatedDateDesc().stream().map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
+    }
+
+    @Override
+    public void applyPrograms(String authorizationHeader, ProgramDto.ProgramJoinRequestDto requestDto) {
+        User user = findUserByUUID(authorizationHeader);
+        String programsType = requestDto.getType();
+        Long programId = requestDto.getProgramId();
+
+        if (verifyCanApplyPrograms(user, programsType, programId)){
+            throw new ProgramException(ALREADY_USER_APPLY_PROGRAM);
+        }
+
+        if (programsType.equals("branding")) {
+            Branding branding = brandingRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
+            programParticipantsRepository.save(ProgramParticipants.toEntity(user, branding));
+        } else if (programsType.equals("self-understanding")) {
+            SelfUnderstanding selfUnderstanding = selfUnderstandingsRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
+            programParticipantsRepository.save(ProgramParticipants.toEntity(user, selfUnderstanding));
+        } else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
+    }
+
+    private boolean verifyCanApplyPrograms(User user, String programsType, Long programId) {
+        if (programsType.equals("branding")) {
+            Branding branding = brandingRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
+            return programParticipantsRepository.existsByUserAndBranding(user, branding);
+        } else if (programsType.equals("self-understanding")) {
+            SelfUnderstanding selfUnderstanding = selfUnderstandingsRepository.findById(programId).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
+            return programParticipantsRepository.existsByUserAndSelfUnderstanding(user, selfUnderstanding);
+        } else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
+    }
+
+    private User findUserByUUID(String authorizationHeader) {
+        UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
+        return findUserByUUID(userId);
+    }
+
+    private UUID findUserIdFromauthorizationHeader(String authorizationHeader) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        jwtUtil.getUserIdFromToken(token);
+        return UUID.fromString(jwtUtil.getUserIdFromToken(token));
     }
 
     private List<SelfUnderstanding> findSelfUnderstandingByFilter(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto, int maxPrice) {

@@ -22,4 +22,6 @@ public interface ProgramService {
     List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto);
 
     List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBrandingNonLogin(ProgramDto.ProgramBrandingRequestDto requestDto);
+
+    void applyPrograms(String authorizationHeader, ProgramDto.ProgramJoinRequestDto requestDto);
 }
