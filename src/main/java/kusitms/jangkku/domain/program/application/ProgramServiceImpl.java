@@ -7,6 +7,7 @@ import kusitms.jangkku.domain.program.domain.Branding;
 import kusitms.jangkku.domain.program.domain.SelfUnderstanding;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
 import kusitms.jangkku.domain.program.dto.ProgramDto;
+import kusitms.jangkku.domain.program.dto.ProgramsHomeDto;
 import kusitms.jangkku.domain.program.exception.ProgramException;
 import kusitms.jangkku.domain.user.dao.UserInterestRepository;
 import kusitms.jangkku.domain.user.dao.UserKeywordRepository;
@@ -57,29 +58,14 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto) {
         int maxPrice = selfUnderstandingsRepository.findTopByOrderByPriceDesc().getPrice();
-        Integer endPrice = requestDto.getEndPrice();
-        if (endPrice == null) endPrice = maxPrice;
 
-        if (requestDto.getForm() != null) {
-            return selfUnderstandingsRepository.findByPriceBetweenAndForm(requestDto.getStartPrice(), endPrice, FORM.ofCode(requestDto.getForm()))
-                    .stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v, maxPrice)).collect(Collectors.toList());
-        }
-
-        return selfUnderstandingsRepository.findByPriceBetween(requestDto.getStartPrice(), endPrice)
-                .stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v, maxPrice)).collect(Collectors.toList());
+        return findSelfUnderstandingByFilter(requestDto, maxPrice).stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v, maxPrice)).collect(Collectors.toList());
     }
+
 
     @Override
     public List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
-        List<Branding> brandings = findAllBrandingByUsersKeywordsAndInterests(authorizationHeader);
-        if (requestDto.getInterest() != null && requestDto.getImageKeywords() != null) {
-            brandings = brandings.stream().filter(v -> v.getProgramsInterests().stream().anyMatch(h -> requestDto.getInterest().contains(h.getInterest().getName())) &&
-                    v.getProgramsImageKeywords().stream().anyMatch(q -> requestDto.getImageKeywords().contains(q.getKeyword().getName()))).collect(Collectors.toList());
-        } else if (requestDto.getInterest() != null && requestDto.getImageKeywords() == null) {
-            brandings = brandings.stream().filter(v -> v.getProgramsInterests().stream().anyMatch(h -> requestDto.getInterest().contains(h.getInterest().getName()))).collect(Collectors.toList());
-        } else if (requestDto.getInterest() == null && requestDto.getImageKeywords() != null) {
-            brandings.stream().filter(v -> v.getProgramsImageKeywords().stream().anyMatch(h -> requestDto.getImageKeywords().contains(h.getKeyword().getName())));
-        }
+        List<Branding> brandings = findBrandingsByFilter(authorizationHeader, requestDto);
         return brandings.stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
     }
 
@@ -92,6 +78,45 @@ public class ProgramServiceImpl implements ProgramService {
         } else if (type.equals("branding")) {
             return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), findAllUserKeyword(user));
         } else throw new ProgramException(NOT_FOUND_PROGRAM);
+    }
+
+    @Override
+    public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeSelfUnderstanding(String authorizationHeader, ProgramDto.ProgramSelfUnderstandingRequestDto requestDto) {
+        int maxPrice = selfUnderstandingsRepository.findTopByOrderByPriceDesc().getPrice();
+        UUID userId = findUserIdFromauthorizationHeader(authorizationHeader);
+        User user = findUserByUUID(userId);
+
+        return findSelfUnderstandingByFilter(requestDto, maxPrice).stream().limit(100).map(v -> ProgramsHomeDto.ProgramsHomeResponseDto.of(v, maxPrice, findAllUserKeyword(user))).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
+        List<Branding> brandings = findBrandingsByFilter(authorizationHeader, requestDto);
+        return brandings.stream().map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
+    }
+
+    private List<SelfUnderstanding> findSelfUnderstandingByFilter(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto, int maxPrice) {
+        Integer endPrice = requestDto.getEndPrice();
+        if (endPrice == null) endPrice = maxPrice;
+
+        if (requestDto.getForm() != null) {
+            return selfUnderstandingsRepository.findByPriceBetweenAndForm(requestDto.getStartPrice(), endPrice, FORM.ofCode(requestDto.getForm()));
+        } else {
+            return selfUnderstandingsRepository.findByPriceBetween(requestDto.getStartPrice(), endPrice);
+        }
+    }
+
+    private List<Branding> findBrandingsByFilter(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
+        List<Branding> brandings = findAllBrandingByUsersKeywordsAndInterests(authorizationHeader);
+        if (requestDto.getInterest() != null && requestDto.getImageKeywords() != null) {
+            brandings = brandings.stream().filter(v -> v.getProgramsInterests().stream().anyMatch(h -> requestDto.getInterest().contains(h.getInterest().getName())) &&
+                    v.getProgramsImageKeywords().stream().anyMatch(q -> requestDto.getImageKeywords().contains(q.getKeyword().getName()))).collect(Collectors.toList());
+        } else if (requestDto.getInterest() != null && requestDto.getImageKeywords() == null) {
+            brandings = brandings.stream().filter(v -> v.getProgramsInterests().stream().anyMatch(h -> requestDto.getInterest().contains(h.getInterest().getName()))).collect(Collectors.toList());
+        } else if (requestDto.getInterest() == null && requestDto.getImageKeywords() != null) {
+            brandings.stream().filter(v -> v.getProgramsImageKeywords().stream().anyMatch(h -> requestDto.getImageKeywords().contains(h.getKeyword().getName())));
+        }
+        return brandings;
     }
 
 
