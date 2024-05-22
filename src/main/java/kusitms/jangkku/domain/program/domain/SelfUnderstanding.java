@@ -7,6 +7,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -38,4 +41,7 @@ public class SelfUnderstanding extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_provdiers_id", foreignKey = @ForeignKey(name = "self_understanding_programs_program_provdiers_id"))
     private ProgramProvider programProvider;
+
+    @OneToMany(mappedBy = "selfUnderstanding",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ProgramParticipants> programParticipants = new ArrayList<>();
 }
