@@ -1,6 +1,5 @@
 package kusitms.jangkku.domain.program.api;
 
-import kusitms.jangkku.domain.persona.constant.PersonaSuccessStatus;
 import kusitms.jangkku.domain.program.application.ProgramService;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
 import kusitms.jangkku.domain.program.dto.ProgramDto;
@@ -78,6 +77,4 @@ public class ProgramController {
         programService.applyPrograms(authorizationHeader,requestDto);
         return ApiResponse.onSuccess(PROGRAM_APPLY_CREATED);
     }
-
 }
-
