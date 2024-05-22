@@ -157,4 +157,20 @@ public class DiscoverPersonaDto {
                     .build();
         }
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class KeywordResponse {
+        private List<String> keywords;
+
+        public static DiscoverPersonaDto.KeywordResponse of(List<String> keywords) {
+            return KeywordResponse.builder()
+                    .keywords(keywords)
+                    .build();
+        }
+    }
 }
