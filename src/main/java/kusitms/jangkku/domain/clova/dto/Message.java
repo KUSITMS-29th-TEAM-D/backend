@@ -14,6 +14,7 @@ public class Message {
     private static String designPersonaPrompt;
     private static String reactionPrompt;
     private static String summaryPrompt;
+    private static String keywordPrompt;
     private ROLE role;
     private String content;
 
@@ -56,6 +57,13 @@ public class Message {
                 .build();
     }
 
+    public static Message createKeywordOf() {
+        return Message.builder()
+                .role(Message.ROLE.system)
+                .content(new String(Base64.getDecoder().decode(keywordPrompt)))
+                .build();
+    }
+
     @Component
     public static class Config {
         @Value("${clova.prompt.design}")
@@ -64,12 +72,15 @@ public class Message {
         private String reaction;
         @Value("${clova.prompt.discover.summary}")
         private String summary;
+        @Value("${clova.prompt.discover.keyword}")
+        private String keyword;
 
         @PostConstruct
         public void init() {
             designPersonaPrompt = design;
             reactionPrompt = reaction;
             summaryPrompt = summary;
+            keywordPrompt = keyword;
         }
     }
 }
