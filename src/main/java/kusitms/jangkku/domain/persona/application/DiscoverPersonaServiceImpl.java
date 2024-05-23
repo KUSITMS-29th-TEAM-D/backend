@@ -14,7 +14,6 @@ import kusitms.jangkku.domain.persona.exception.PersonaErrorResult;
 import kusitms.jangkku.domain.persona.exception.PersonaException;
 import kusitms.jangkku.domain.user.domain.User;
 import kusitms.jangkku.global.util.JwtUtil;
-import kusitms.jangkku.global.util.NumberUtil;
 import kusitms.jangkku.global.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     private final JwtUtil jwtUtil;
-    private final NumberUtil numberUtil;
     private final StringUtil stringUtil;
     private final ClovaService clovaService;
     private final DiscoverPersonaRepository discoverPersonaRepository;
@@ -56,8 +54,8 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         }
 
         List<Integer> questionNumbers = discoverPersonaChattingRepository.findQuestionNumbersByDiscoverPersona(discoverPersona);
-        int newQuestionNumber = createNewQuestionNumber(questionNumbers);
-        if (questionNumbers.size() == 3) {
+        int newQuestionNumber = questionNumbers.size() + 1;
+        if (newQuestionNumber == 3) {
             discoverPersona.updateComplete(true); // 완료 처리
             discoverPersonaRepository.save(discoverPersona);
         }
@@ -82,6 +80,10 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
                 .orElseThrow(() -> new PersonaException(PersonaErrorResult.NOT_FOUND_CHATTING));
 
         String reaction = clovaService.createDiscoverPersonaReaction(answerRequest.getAnswer());
+        // 마지막 대화인 경우 마무리 멘트 추가
+        if (discoverPersonaChatting.getDiscoverPersona().getIsComplete()) {
+            reaction += Question.FINAL_COMMENT.getContent();
+        }
         String summary = clovaService.createDiscoverPersonaSummary(answerRequest.getAnswer());
 
         discoverPersonaChatting.updateAnswer(answerRequest.getAnswer());
@@ -173,6 +175,9 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         List<DiscoverPersonaKeyword> allKeywords = collectKeywords(user);
+        if (allKeywords.isEmpty()) {
+            throw new PersonaException(PersonaErrorResult.NOT_FOUND_ANY_KEYWORDS);
+        }
 
         // 상위 6개 키워드만 반환
         List<String> topKeywords = getTopKeywords(allKeywords);
@@ -243,13 +248,13 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
                 .collect(Collectors.toList());
     }
 
-    // 질문 번호를 생성하는 메서드
+    /* 질문 번호를 생성하는 메서드
     private int createNewQuestionNumber(List<Integer> questionNumbers) {
         int randomQuestionNumber = numberUtil.getRandomNumberNotInList(questionNumbers);
         questionNumbers.add(randomQuestionNumber);
 
         return randomQuestionNumber;
-    }
+    } */
 
     // Enum에서 질문 내용을 가져오는 메서드
     private String getQuestionContent(String category, int number) {

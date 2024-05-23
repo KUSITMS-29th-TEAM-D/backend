@@ -14,6 +14,7 @@ public enum PersonaErrorResult implements BaseErrorCode {
     IS_ALREADY_COMPLETED(HttpStatus.CONFLICT, "409", "이미 답변이 종료된 카테고리입니다."),
     NOT_FOUND_QUESTION(HttpStatus.NOT_FOUND, "404", "존재하지 않는 질문입니다."),
     NOT_FOUND_CHATTING(HttpStatus.NOT_FOUND, "404", "존재하지 않는 채팅입니다."),
+    NOT_FOUND_ANY_KEYWORDS(HttpStatus.NOT_FOUND, "404", "테스트를 진행하지 않아 키워드가 존재하지 않습니다."),
     NOT_FOUND_KEYWORDS(HttpStatus.NOT_FOUND, "404", "대화가 완료되지 않아 키워드가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
