@@ -109,19 +109,27 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
         DiscoverPersona discoverPersona = getDiscoverPersona(user, category);
         List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
+
         // 미완료된 대화가 있다면 제거
+        boolean hasIncompleteChatting = false;
+        List<DiscoverPersonaChatting> completedChattings = new ArrayList<>();
         for (DiscoverPersonaChatting chatting : chattings) {
             if (Objects.isNull(chatting.getAnswer())) {
                 discoverPersonaChattingRepository.delete(chatting);
-                discoverPersona.updateComplete(false); // 미완료 처리
-                discoverPersonaChattingRepository.save(chatting);
-                discoverPersonaRepository.save(discoverPersona);
+                hasIncompleteChatting = true;
+            } else {
+                completedChattings.add(chatting);
             }
         }
 
-        List<String> stageQuestions = createStageQuestions(category, chattings);
+        if (hasIncompleteChatting) {
+            discoverPersona.updateComplete(false); // 미완료 처리
+            discoverPersonaRepository.save(discoverPersona);
+        }
 
-        return DiscoverPersonaDto.ChattingResponse.of(stageQuestions, chattings);
+        List<String> stageQuestions = createStageQuestions(category, completedChattings);
+
+        return DiscoverPersonaDto.ChattingResponse.of(stageQuestions, completedChattings);
     }
 
     // 답변 요약 내역을 반환하는 메서드
