@@ -92,8 +92,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public List<ProgramsHomeDto.ProgramsHomeResponseDto> getHomeBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
-        List<Branding> brandings = findBrandingsByFilter(authorizationHeader, requestDto);
-        return brandings.stream().limit(5).map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
+        return findBrandingsByFilter(authorizationHeader, requestDto).stream().limit(5).map(ProgramsHomeDto.ProgramsHomeResponseDto::of).collect(Collectors.toList());
     }
 
     @Override
