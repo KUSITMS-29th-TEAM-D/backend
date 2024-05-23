@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class DefinePersonaServiceImpl implements DefinePersonaService {
     private final JwtUtil jwtUtil;
@@ -28,7 +29,6 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 도출하는 메서드 (로그인 유저)
     @Override
-    @Transactional
     public DefinePersonaDto.DefinePersonaResponse createDefinePersona(String authorizationHeader, DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
         List<String> definePersonaKeywords = new ArrayList<>();
         String stepOneKeyword = judgeStepOneType(definePersonaRequest.getStageOneKeywords(), definePersonaKeywords);
@@ -45,7 +45,6 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 도출하는 메서드 (비로그인 유저)
     @Override
-    @Transactional
     public DefinePersonaDto.DefinePersonaResponse createDefinePersonaForSharing(DefinePersonaDto.DefinePersonaRequest definePersonaRequest) {
         List<String> definePersonaKeywords = new ArrayList<>();
         String stepOneKeyword = judgeStepOneType(definePersonaRequest.getStageOneKeywords(), definePersonaKeywords);
@@ -62,7 +61,6 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 반환하는 메서드 (로그인 유저)
     @Override
-    @Transactional
     public DefinePersonaDto.DefinePersonaResponse getDefinePersona(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -82,7 +80,6 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
 
     // 정의하기 페르소나 결과를 반환하는 메서드 (비로그인 유저)
     @Override
-    @Transactional
     public DefinePersonaDto.DefinePersonaResponse getDefinePersonaForSharing(String definePersonaId) {
 
         DefinePersona definePersona = definePersonaRepository.findByDefinePersonaId(UUID.fromString(definePersonaId)); // 고유 id로 검색
@@ -163,7 +160,6 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     }
 
     // 정의하기 페르소나를 저장하는 메서드 (로그인 유저)
-    @Transactional
     protected DefinePersona saveDefinePersona(String authorizationHeader, String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -186,7 +182,6 @@ public class DefinePersonaServiceImpl implements DefinePersonaService {
     }
 
     // 정의하기 페르소나를 저장하는 메서드 (비로그인 유저)
-    @Transactional
     protected DefinePersona saveDefinePersonaForSharing(String definePersonaName, String definePersonaCode, List<String> definePersonaKeywords) {
 
         DefinePersona definePersona = DefinePersona.builder()

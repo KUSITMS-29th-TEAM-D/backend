@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     private final JwtUtil jwtUtil;
@@ -35,7 +36,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 질문을 새롭게 생성하며 채팅을 시작하는 메서드
     @Override
-    @Transactional
     public DiscoverPersonaDto.QuestionResponse getNewQuestion(String authorizationHeader, String category) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -72,7 +72,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 공감과 요약을 생성해 응답하는 메서드
     @Override
-    @Transactional
     public DiscoverPersonaDto.AnswerResponse getReactionAndSummary(String authorizationHeader, DiscoverPersonaDto.AnswerRequest answerRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -105,7 +104,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 카테고리별 채팅 내역을 반환하는 메서드
     @Override
-    @Transactional
     public DiscoverPersonaDto.ChattingResponse getChattings(String authorizationHeader, String category) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -126,7 +124,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 답변 요약 내역을 반환하는 메서드
     @Override
-    @Transactional
     public DiscoverPersonaDto.SummaryResponse getSummaries(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -145,7 +142,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 채팅 다시하기를 위해 테이블을 새롭게 생성하는 메서드
     @Override
-    @Transactional
     public void restartChatting(String authorizationHeader, DiscoverPersonaDto.resetChattingRequest resetChattingRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -158,7 +154,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 카테고리별 대화 완료 여부를 반환하는 메서드
     @Override
-    @Transactional
     public DiscoverPersonaDto.CheckCompleteResponse checkComplete(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -172,7 +167,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 모든 카테고리에서 상위 6개의 키워드를 반환하는 메서드
     @Override
-    @Transactional
     public DiscoverPersonaDto.KeywordResponse getAllKeywords(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -189,7 +183,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
 
     // 특정 카테고리에서 상위 6개의 키워드를 반환하는 메서드
     @Override
-    @Transactional
     public DiscoverPersonaDto.KeywordResponse getCategoryKeywords(String authorizationHeader, String category) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         List<DiscoverPersonaKeyword> keywords = collectCategoryKeywords(user, category);
@@ -201,7 +194,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 모든 카테고리의 키워드를 반환하는 메서드
-    @Transactional
     protected List<DiscoverPersonaKeyword> collectKeywords(User user) {
         List<DiscoverPersonaKeyword> allKeywords = new ArrayList<>();
 
@@ -217,7 +209,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 특정 카테고리의 키워드를 반환하는 메서드
-    @Transactional
     protected List<DiscoverPersonaKeyword> collectCategoryKeywords(User user, String category) {
         DiscoverPersona persona = getDiscoverPersona(user, category);
         if (persona != null && persona.getIsComplete()) {
@@ -228,13 +219,11 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 카테고리별 돌아보기 페르소나를 반환하는 메서드
-    @Transactional
     protected DiscoverPersona getDiscoverPersona(User user, String category) {
         return discoverPersonaRepository.findFirstByUserAndCategoryOrderByCreatedDateDesc(user, category);
     }
 
     // 페르소나에 해당하는 키워드를 찾아 반환하는 메서드
-    @Transactional
     protected List<DiscoverPersonaKeyword> getKeywordsFromPersona(DiscoverPersona persona) {
         return discoverPersonaKeywordRepository.findAllByDiscoverPersona(persona);
     }
@@ -280,7 +269,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 답변 요약 목록을 반환하는 메서드
-    @Transactional
     protected List<String> createSummaries(DiscoverPersona discoverPersona) {
         List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
         List<String> summaries = new ArrayList<>();
@@ -292,7 +280,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 페르소나 키워드를 생성하고 저장하는 메서드
-    @Transactional
     protected void createPersonaKeywords(DiscoverPersona discoverPersona) {
         List<String> summaries = discoverPersonaChattingRepository.findSummariesByDiscoverPersona(discoverPersona);
         String clovaRequestText = stringUtil.joinWithNewLine(summaries);
@@ -305,7 +292,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     }
 
     // 새로 뽑아낸 키워드를 업데이트 or 저장하는 메서드
-    @Transactional
     protected void processKeyword(DiscoverPersona discoverPersona, String name) {
         DiscoverPersonaKeyword personaKeyword = discoverPersonaKeywordRepository.findByDiscoverPersonaAndName(discoverPersona, name);
         if (!Objects.isNull(personaKeyword)) {

@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     @Value("${jwt.access-token.expiration-time}")
@@ -60,7 +61,6 @@ public class UserServiceImpl implements UserService {
 
     // 기본 정보까지 추가하여 신규 유저를 등록하는 메서드
     @Override
-    @Transactional
     public UserDto.UserRegisterResponse registerUser(HttpServletResponse response, String authorizationHeader, UserDto.UserRegisterRequest userRegisterRequest) {
         // 토큰을 이용하여 사용자 정보 추출
         String registerToken = jwtUtil.getTokenFromHeader(authorizationHeader);
@@ -107,14 +107,12 @@ public class UserServiceImpl implements UserService {
 
     // 닉네임 중복 여부를 판단하는 메서드
     @Override
-    @Transactional
     public boolean isDuplicate(String nickname) {
         return userOnboardingInfoRepository.findByNickname(nickname) != null;
     }
 
     // 유저 프로필 사진을 업로드하는 메서드
     @Override
-    @Transactional
     public void uploadProfileImg(String authorizationHeader, MultipartFile file) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
@@ -133,7 +131,6 @@ public class UserServiceImpl implements UserService {
 
     // 유저 정보를 반환하는 메서드
     @Override
-    @Transactional
     public UserDto.UserInfosResponse getUserInfos(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
@@ -143,7 +140,6 @@ public class UserServiceImpl implements UserService {
 
     // 유저 정보를 수정하는 메서드
     @Override
-    @Transactional
     public UserDto.UserInfosResponse editUserInfos(String authorizationHeader, UserDto.EditUserInfosRequest editUserInfosRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UserOnboardingInfo userOnboardingInfo = userOnboardingInfoRepository.findByUser(user);
@@ -161,8 +157,8 @@ public class UserServiceImpl implements UserService {
         response.addCookie(cookie);
     }
 
+    // 유저의 신청 프로그램을 반환하는 메서드
     @Override
-    @Transactional
     public List<UserDto.userHomeResponse> findUserApplyPrograms(String authorizationHeader, String type, String sort) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         List<ProgramParticipants> programParticipants = programParticipantsRepository.findAllByUser(user);
@@ -195,7 +191,6 @@ public class UserServiceImpl implements UserService {
     }
 
     // 사용자의 관심 분야를 저장하는 메서드
-    @Transactional
     protected void saveUserInterests(User user, List<String> interestList) {
         if (interestList != null && !interestList.isEmpty()) {
             for (String interestName : interestList) {
@@ -213,7 +208,6 @@ public class UserServiceImpl implements UserService {
     }
 
     // 사용자의 키워드를 저장하는 메서드
-    @Transactional
     protected void saveUserKeywords(User user, List<String> keywordList) {
         if (keywordList != null && !keywordList.isEmpty()) {
             for (String keywordName : keywordList) {

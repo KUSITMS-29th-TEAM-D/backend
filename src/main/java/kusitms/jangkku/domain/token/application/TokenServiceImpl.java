@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
     @Value("${jwt.access-token.expiration-time}")
@@ -34,7 +35,6 @@ public class TokenServiceImpl implements TokenService {
 
     // 리프레쉬 토큰을 재발행하는 메서드
     @Override
-    @Transactional
     public TokenDto.TokenResponse reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = cookieUtil.getCookie(request);
         String refreshToken = cookie.getValue();
