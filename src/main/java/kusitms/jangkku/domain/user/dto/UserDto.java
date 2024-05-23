@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserDto {
@@ -96,22 +97,25 @@ public class UserDto {
         private String programsTitle;
         private Long programsId;
         private String type;
+        private LocalDateTime createdDate;  // createdDate 필드 추가
 
-        public static UserDto.userHomeResponse of(Branding branding){
+        public static UserDto.userHomeResponse of(Branding branding,LocalDateTime createdDate){
             return userHomeResponse.builder()
                     .imageUrl(branding.getBrandingUrl())
                     .programsTitle(branding.getName())
                     .programsId(branding.getId())
                     .type("branding")
+                    .createdDate(branding.getCreatedDate())
                     .build();
         }
 
-        public static UserDto.userHomeResponse of(SelfUnderstanding selfUnderstanding){
+        public static UserDto.userHomeResponse of(SelfUnderstanding selfUnderstanding,LocalDateTime createdDate){
             return userHomeResponse.builder()
                     .imageUrl(selfUnderstanding.getSelfUnderstandingUrl())
                     .programsTitle(selfUnderstanding.getName())
                     .programsId(selfUnderstanding.getId())
                     .type("self-understanding")
+                    .createdDate(createdDate)
                     .build();
         }
     }
