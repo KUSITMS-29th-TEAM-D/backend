@@ -114,6 +114,8 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
             if (Objects.isNull(chatting.getAnswer())) {
                 discoverPersonaChattingRepository.delete(chatting);
                 discoverPersona.updateComplete(false); // 미완료 처리
+                discoverPersonaChattingRepository.save(chatting);
+                discoverPersonaRepository.save(discoverPersona);
             }
         }
 
