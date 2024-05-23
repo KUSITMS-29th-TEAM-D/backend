@@ -15,7 +15,7 @@ public class ProgramDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
-    public static class ProgrmsMainResponsetDto {
+    public static class ProgramsMainResponseDto {
         private String selfUnderstandingUrl; //썸네일 이미지
         private String name;//제목
         private String link;
@@ -25,8 +25,8 @@ public class ProgramDto {
         private String form;
         private int price;
 
-        public static ProgrmsMainResponsetDto of(SelfUnderstanding selfUnderstandings) {
-            return ProgrmsMainResponsetDto.builder()
+        public static ProgramsMainResponseDto of(SelfUnderstanding selfUnderstandings) {
+            return ProgramsMainResponseDto.builder()
                     .selfUnderstandingUrl(selfUnderstandings.getSelfUnderstandingUrl())
                     .name(selfUnderstandings.getName())
                     .link(selfUnderstandings.getLink())
@@ -35,8 +35,8 @@ public class ProgramDto {
                     .build();
         }
 
-        public static ProgrmsMainResponsetDto of(SelfUnderstanding selfUnderstandings,int maxPrice) {
-            return ProgrmsMainResponsetDto.builder()
+        public static ProgramsMainResponseDto of(SelfUnderstanding selfUnderstandings, int maxPrice) {
+            return ProgramsMainResponseDto.builder()
                     .selfUnderstandingUrl(selfUnderstandings.getSelfUnderstandingUrl())
                     .name(selfUnderstandings.getName())
                     .link(selfUnderstandings.getLink())
@@ -48,8 +48,8 @@ public class ProgramDto {
                     .build();
         }
 
-        public static ProgrmsMainResponsetDto of(Branding branding) {
-            return ProgrmsMainResponsetDto.builder()
+        public static ProgramsMainResponseDto of(Branding branding) {
+            return ProgramsMainResponseDto.builder()
                     .selfUnderstandingUrl(branding.getBrandingUrl())
                     .name(branding.getName())
                     .link(branding.getLink())

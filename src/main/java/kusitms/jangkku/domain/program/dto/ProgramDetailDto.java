@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProgramDetailDto {
 
@@ -55,14 +56,14 @@ public class ProgramDetailDto {
         }
 
         // 브랜딩
-        public static ProgramDetailResponseDto of(Branding branding, List<String> userKeywords, int participants, boolean isApply) {
+        public static ProgramDetailResponseDto of(Branding branding, int participants, boolean isApply) {
             return ProgramDetailResponseDto.builder()
                     .imageUrl(branding.getBrandingUrl())
                     .name(branding.getName())
                     .oneLineDescription(branding.getOneLineDescription())
                     .descriptionUrl(branding.getDescriptionUrl())
                     .link(branding.getLink())
-                    .keywords(userKeywords)
+                    .keywords(branding.getProgramsImageKeywords().stream().map(v->v.getKeyword().getName()).collect(Collectors.toList()))
                     .providerImage(branding.getProgramProvider().getProviderImage())
                     .providerName(branding.getProgramProvider().getProviderName())
                     .providerJob(branding.getProgramProvider().getProviderJob())
