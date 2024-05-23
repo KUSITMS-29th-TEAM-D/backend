@@ -29,8 +29,8 @@ import static kusitms.jangkku.domain.program.exception.ProgramErrorResult.*;
 import static kusitms.jangkku.domain.user.exception.UserErrorResult.NOT_FOUND_USER;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class ProgramServiceImpl implements ProgramService {
 
     private final JwtUtil jwtUtil;
@@ -198,5 +198,4 @@ public class ProgramServiceImpl implements ProgramService {
     private User findUserByUUID(UUID userId) {
         return userRepository.findByUserId(userId).orElseThrow(() -> new UserException(NOT_FOUND_USER));
     }
-
 }

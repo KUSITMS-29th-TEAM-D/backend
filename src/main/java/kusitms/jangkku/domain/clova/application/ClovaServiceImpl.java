@@ -1,5 +1,6 @@
 package kusitms.jangkku.domain.clova.application;
 
+import jakarta.transaction.Transactional;
 import kusitms.jangkku.domain.clova.dto.ClovaDto;
 import kusitms.jangkku.domain.clova.dto.Message;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ClovaServiceImpl implements ClovaService {
 
