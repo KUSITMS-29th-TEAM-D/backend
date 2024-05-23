@@ -42,29 +42,29 @@ public class ProgramServiceImpl implements ProgramService {
     private final ProgramParticipantsRepository programParticipantsRepository;
 
     @Override
-    public List<ProgramDto.ProgrmsMainResponsetDto> getMainSelfUnderstanding() {
-        return selfUnderstandingsRepository.findTop9ByOrderByCreatedDateDesc().stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
+    public List<ProgramDto.ProgramsMainResponseDto> getMainSelfUnderstanding() {
+        return selfUnderstandingsRepository.findTop9ByOrderByCreatedDateDesc().stream().map(ProgramDto.ProgramsMainResponseDto::of).collect(Collectors.toList());
     }
 
     @Override
-    public List<ProgramDto.ProgrmsMainResponsetDto> getMainBranding(String authorizationHeader) {
+    public List<ProgramDto.ProgramsMainResponseDto> getMainBranding(String authorizationHeader) {
         //브랜딩 프로그램에서 유저의 관심분야와 키워드
-        return findAllBrandingByUsersKeywordsAndInterests(authorizationHeader).stream().limit(9).map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
+        return findAllBrandingByUsersKeywordsAndInterests(authorizationHeader).stream().limit(9).map(ProgramDto.ProgramsMainResponseDto::of).collect(Collectors.toList());
     }
 
 
     @Override
-    public List<ProgramDto.ProgrmsMainResponsetDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto) {
+    public List<ProgramDto.ProgramsMainResponseDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto) {
         int maxPrice = selfUnderstandingsRepository.findTopByOrderByPriceDesc().getPrice();
 
-        return findSelfUnderstandingByFilter(requestDto, maxPrice).stream().map(v -> ProgramDto.ProgrmsMainResponsetDto.of(v, maxPrice)).collect(Collectors.toList());
+        return findSelfUnderstandingByFilter(requestDto, maxPrice).stream().map(v -> ProgramDto.ProgramsMainResponseDto.of(v, maxPrice)).collect(Collectors.toList());
     }
 
 
     @Override
-    public List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
+    public List<ProgramDto.ProgramsMainResponseDto> getMoreBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
         List<Branding> brandings = findBrandingsByFilter(authorizationHeader, requestDto);
-        return brandings.stream().map(ProgramDto.ProgrmsMainResponsetDto::of).collect(Collectors.toList());
+        return brandings.stream().map(ProgramDto.ProgramsMainResponseDto::of).collect(Collectors.toList());
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ProgramServiceImpl implements ProgramService {
             return ProgramDetailDto.ProgramDetailResponseDto.of(findSelfUnderStandingById(programId), findAllUserKeyword(user), participants, isApply);
         } else if (type.equals("branding")) {
             participants = findBrandingById(programId).getProgramParticipants().size();
-            return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), findAllUserKeyword(user), participants, isApply);
+            return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), participants, isApply);
         } else throw new ProgramException(NOT_FOUND_PROGRAM);
     }
 
@@ -148,7 +148,7 @@ public class ProgramServiceImpl implements ProgramService {
 
         if (requestDto.getForm() == null || requestDto.getForm().equals("온오프라인")) {
             return selfUnderstandingsRepository.findByPriceBetween(requestDto.getStartPrice(), endPrice);
-        } else if(requestDto.getForm().equals("온라인")||requestDto.getForm().equals("오프라인"))
+        } else if (requestDto.getForm().equals("온라인") || requestDto.getForm().equals("오프라인"))
             return selfUnderstandingsRepository.findByPriceBetweenAndForm(requestDto.getStartPrice(), endPrice, FORM.ofCode(requestDto.getForm()));
         else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
     }

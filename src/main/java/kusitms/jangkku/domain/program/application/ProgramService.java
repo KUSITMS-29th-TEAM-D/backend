@@ -7,13 +7,13 @@ import kusitms.jangkku.domain.program.dto.ProgramsHomeDto;
 import java.util.List;
 
 public interface ProgramService {
-    List<ProgramDto.ProgrmsMainResponsetDto> getMainSelfUnderstanding();
+    List<ProgramDto.ProgramsMainResponseDto> getMainSelfUnderstanding();
 
-    List<ProgramDto.ProgrmsMainResponsetDto> getMainBranding(String authorizationHeader);
+    List<ProgramDto.ProgramsMainResponseDto> getMainBranding(String authorizationHeader);
 
-    List<ProgramDto.ProgrmsMainResponsetDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto);
+    List<ProgramDto.ProgramsMainResponseDto> getMoreSelfUnderstanding(ProgramDto.ProgramSelfUnderstandingRequestDto requestDto);
 
-    List<ProgramDto.ProgrmsMainResponsetDto> getMoreBranding(String authorizationHeader,ProgramDto.ProgramBrandingRequestDto requestDto);
+    List<ProgramDto.ProgramsMainResponseDto> getMoreBranding(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto);
 
     ProgramDetailDto.ProgramDetailResponseDto getDetailProgram(String authorizationHeader, Long programId, String type);
 
