@@ -77,8 +77,8 @@ public class ProgramServiceImpl implements ProgramService {
             participants = findSelfUnderstandingById(programId).getProgramParticipants().size();
             return ProgramDetailDto.ProgramDetailResponseDto.of(findSelfUnderStandingById(programId), findAllUserKeyword(user), participants, isApply);
         } else if (type.equals("branding")) {
-            participants=findBrandingById(programId).getProgramParticipants().size();
-            return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), findAllUserKeyword(user),participants, isApply);
+            participants = findBrandingById(programId).getProgramParticipants().size();
+            return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), findAllUserKeyword(user), participants, isApply);
         } else throw new ProgramException(NOT_FOUND_PROGRAM);
     }
 
@@ -120,7 +120,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     private boolean verifyCanApplyPrograms(User user, String programsType, Long programId) {
         if (programsType.equals("branding")) {
-            return programParticipantsRepository.existsByUserAndBranding(user,findBrandingById(programId));
+            return programParticipantsRepository.existsByUserAndBranding(user, findBrandingById(programId));
         } else if (programsType.equals("self-understanding")) {
             return programParticipantsRepository.existsByUserAndSelfUnderstanding(user, findSelfUnderstandingById(programId));
         } else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
@@ -136,7 +136,6 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
 
-
     private UUID findUserIdFromauthorizationHeader(String authorizationHeader) {
         String token = jwtUtil.getTokenFromHeader(authorizationHeader);
         jwtUtil.getUserIdFromToken(token);
@@ -147,11 +146,11 @@ public class ProgramServiceImpl implements ProgramService {
         Integer endPrice = requestDto.getEndPrice();
         if (endPrice == null) endPrice = maxPrice;
 
-        if (requestDto.getForm() != null) {
-            return selfUnderstandingsRepository.findByPriceBetweenAndForm(requestDto.getStartPrice(), endPrice, FORM.ofCode(requestDto.getForm()));
-        } else {
+        if (requestDto.getForm() == null || requestDto.getForm().equals("온오프라인")) {
             return selfUnderstandingsRepository.findByPriceBetween(requestDto.getStartPrice(), endPrice);
-        }
+        } else if(requestDto.getForm().equals("온라인")||requestDto.getForm().equals("오프라인"))
+            return selfUnderstandingsRepository.findByPriceBetweenAndForm(requestDto.getStartPrice(), endPrice, FORM.ofCode(requestDto.getForm()));
+        else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
     }
 
     private List<Branding> findBrandingsByFilter(String authorizationHeader, ProgramDto.ProgramBrandingRequestDto requestDto) {
