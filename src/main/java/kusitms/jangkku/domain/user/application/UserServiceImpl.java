@@ -7,6 +7,10 @@ import kusitms.jangkku.domain.interest.dao.InterestRepository;
 import kusitms.jangkku.domain.interest.domain.Interest;
 import kusitms.jangkku.domain.keyword.dao.KeywordRepository;
 import kusitms.jangkku.domain.keyword.domain.Keyword;
+import kusitms.jangkku.domain.program.dao.ProgramParticipantsRepository;
+import kusitms.jangkku.domain.program.domain.ProgramParticipants;
+import kusitms.jangkku.domain.program.exception.ProgramErrorResult;
+import kusitms.jangkku.domain.program.exception.ProgramException;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;
 import kusitms.jangkku.domain.token.domain.RefreshToken;
 import kusitms.jangkku.domain.user.dao.UserOnboardingInfoRepository;
@@ -28,8 +32,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -51,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final UserInterestRepository userInterestRepository;
     private final UserKeywordRepository userKeywordRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ProgramParticipantsRepository programParticipantsRepository;
 
     // 기본 정보까지 추가하여 신규 유저를 등록하는 메서드
     @Override
@@ -153,6 +159,39 @@ public class UserServiceImpl implements UserService {
     public void logout(HttpServletResponse response) {
         Cookie cookie = cookieUtil.deleteCookie();
         response.addCookie(cookie);
+    }
+
+    @Override
+    @Transactional
+    public List<UserDto.userHomeResponse> findUserApplyPrograms(String authorizationHeader, String type, String sort) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+        List<ProgramParticipants> programParticipants = programParticipantsRepository.findAllByUser(user);
+
+        Stream<UserDto.userHomeResponse> responseStream = switch (type) {
+            case "branding" -> programParticipants.stream()
+                    .filter(pp -> pp.getBranding() != null)
+                    .map(pp -> UserDto.userHomeResponse.of(pp.getBranding(), pp.getCreatedDate()));
+            case "self-understanding" -> programParticipants.stream()
+                    .filter(pp -> pp.getSelfUnderstanding() != null)
+                    .map(pp -> UserDto.userHomeResponse.of(pp.getSelfUnderstanding(), pp.getCreatedDate()));
+            case "all" -> programParticipants.stream()
+                    .flatMap(pp -> Stream.of(
+                            pp.getBranding() != null ? UserDto.userHomeResponse.of(pp.getBranding(), pp.getCreatedDate()) : null,
+                            pp.getSelfUnderstanding() != null ? UserDto.userHomeResponse.of(pp.getSelfUnderstanding(), pp.getCreatedDate()) : null
+                    )).filter(Objects::nonNull);
+            default -> throw new ProgramException(ProgramErrorResult.PROGRAM_TYPE_NOT_FOUND);
+        };
+
+        if ("asc".equals(sort)) {
+            return responseStream.sorted(Comparator.comparing(UserDto.userHomeResponse::getCreatedDate))
+                    .collect(Collectors.toList());
+        } else if ("desc".equals(sort)) {
+            return responseStream.sorted(Comparator.comparing(UserDto.userHomeResponse::getCreatedDate).reversed())
+                    .collect(Collectors.toList());
+        } else {
+            return responseStream.collect(Collectors.toList());
+        }
+
     }
 
     // 사용자의 관심 분야를 저장하는 메서드
