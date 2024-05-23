@@ -24,25 +24,25 @@ public class ProgramController {
 
     //자기이해 조회 - 전체
     @GetMapping("/main/self-understanding")
-    public ResponseEntity<ApiResponse<List<ProgrmsMainResponsetDto>>> findMainSelfUnderstanding() {
+    public ResponseEntity<ApiResponse<List<ProgramsMainResponseDto>>> findMainSelfUnderstanding() {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getMainSelfUnderstanding());
     }
 
     //브랜딩 조회 - 전체
     @GetMapping("/main/branding")
-    public ResponseEntity<ApiResponse<List<ProgrmsMainResponsetDto>>> findMainBranding(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<List<ProgramsMainResponseDto>>> findMainBranding(@RequestHeader("Authorization") String authorizationHeader) {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getMainBranding(authorizationHeader));
     }
 
     //자기이해 조회 - 필터링
     @PostMapping("/more/self-understanding")
-    private ResponseEntity<ApiResponse<List<ProgrmsMainResponsetDto>>> findMoreSelfUnderstanding(@RequestBody ProgramSelfUnderstandingRequestDto requestDto) {
+    private ResponseEntity<ApiResponse<List<ProgramsMainResponseDto>>> findMoreSelfUnderstanding(@RequestBody ProgramSelfUnderstandingRequestDto requestDto) {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getMoreSelfUnderstanding(requestDto));
     }
 
     //브랜딩 조회 - 필터링
     @PostMapping("/more/branding")
-    private ResponseEntity<ApiResponse<List<ProgrmsMainResponsetDto>>> findMoreSelfUnderstanding(@RequestHeader("Authorization") String authorizationHeader,@RequestBody ProgramBrandingRequestDto requestDto) {
+    private ResponseEntity<ApiResponse<List<ProgramsMainResponseDto>>> findMoreSelfUnderstanding(@RequestHeader("Authorization") String authorizationHeader, @RequestBody ProgramBrandingRequestDto requestDto) {
         return ApiResponse.onSuccess(SuccessStatus._OK, programService.getMoreBranding(authorizationHeader,requestDto));
     }
 
