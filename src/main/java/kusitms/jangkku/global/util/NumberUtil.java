@@ -10,7 +10,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class NumberUtil {
 
-    // 목록에 없는 숫자 하나를 랜덤하게 뽑는 메서드
+    /* 목록에 없는 숫자 하나를 랜덤하게 뽑는 메서드
     public int getRandomNumberNotInList(List<Integer> questionNumbers) {
         // 랜덤한 숫자 생성
         Random random = new Random();
@@ -22,5 +22,5 @@ public class NumberUtil {
         }
 
         return randomNumber;
-    }
+    } */
 }

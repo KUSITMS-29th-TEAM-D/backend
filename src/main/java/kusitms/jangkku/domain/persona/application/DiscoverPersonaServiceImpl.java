@@ -79,10 +79,14 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         DiscoverPersonaChatting discoverPersonaChatting = discoverPersonaChattingRepository.findById(answerRequest.getChattingId())
                 .orElseThrow(() -> new PersonaException(PersonaErrorResult.NOT_FOUND_CHATTING));
 
+        DiscoverPersona discoverPersona = discoverPersonaChatting.getDiscoverPersona();
+
         String reaction = clovaService.createDiscoverPersonaReaction(answerRequest.getAnswer());
         // 마지막 대화인 경우 마무리 멘트 추가
-        if (discoverPersonaChatting.getDiscoverPersona().getIsComplete()) {
-            reaction += Question.FINAL_COMMENT.getContent();
+        if (discoverPersona.getIsComplete()) {
+            String category = discoverPersona.getCategory();
+            String finalComment = getQuestionContent(category, 0);
+            reaction += finalComment;
         }
         String summary = clovaService.createDiscoverPersonaSummary(answerRequest.getAnswer());
 
@@ -90,8 +94,6 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         discoverPersonaChatting.updateReaction(reaction);
         discoverPersonaChatting.updateSummary(summary);
         discoverPersonaChattingRepository.save(discoverPersonaChatting);
-
-        DiscoverPersona discoverPersona = discoverPersonaChatting.getDiscoverPersona();
 
         // 대화가 완료된 경우 키워드 생성
         if (discoverPersona.getIsComplete()) {
