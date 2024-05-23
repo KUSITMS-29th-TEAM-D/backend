@@ -11,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+import static kusitms.jangkku.domain.user.constant.UserSuccessStatus.SUCCESS_FIND_USER_APPLY_PROGRAMS;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -81,4 +85,12 @@ public class UserController {
 
         return ApiResponse.onSuccess(UserSuccessStatus.SUCCESS_LOGOUT);
     }
+
+    //마이페이지 신청한 경험 조회 API
+    @GetMapping("/experiences/{type}/{sort}")
+    public ResponseEntity<ApiResponse<List<UserDto.userHomeResponse>>> findUserApplyPrograms(@RequestHeader("Authorization") String authorizationHeader,@PathVariable String type,@PathVariable String sort) {
+        return ApiResponse.onSuccess(SUCCESS_FIND_USER_APPLY_PROGRAMS,userService.findUserApplyPrograms(authorizationHeader,type,sort));
+    }
+
+
 }

@@ -6,7 +6,10 @@ import kusitms.jangkku.domain.program.domain.SelfUnderstanding;
 import kusitms.jangkku.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProgramParticipantsRepository extends JpaRepository<ProgramParticipants,Long> {
     boolean existsByUserAndBranding(User user, Branding branding);
     boolean existsByUserAndSelfUnderstanding(User user, SelfUnderstanding selfUnderstanding);
+    List<ProgramParticipants> findAllByUser(User user);
 }
