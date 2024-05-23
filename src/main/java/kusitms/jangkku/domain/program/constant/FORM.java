@@ -10,8 +10,7 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum FORM {
     ONLINE("온라인","ONLINE"),
-    OFFLINE("오프라인","OFFLINE"),
-    ALL("온오프라인","ALL");
+    OFFLINE("오프라인","OFFLINE");
 
     private final String code;
     private final String name;
