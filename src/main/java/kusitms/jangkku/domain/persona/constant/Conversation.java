@@ -1,6 +1,6 @@
 package kusitms.jangkku.domain.persona.constant;
 
-public enum Question {
+public enum Conversation {
     HEALTH_Q1(1, "건강", """
             안녕 나는 마음의 건강이라는 주제로 너와 대화하며, 너의 건강한 내면을 발견하고 너의 기둥을 찾을 수 있도록 도와주는 셀퍼야.
             앞으로 내가 3가지 질문을 할건데, 잘 대답해봐.
@@ -62,7 +62,7 @@ public enum Question {
     private String category;
     private String content;
 
-    Question(int number, String category, String content) {
+    Conversation(int number, String category, String content) {
         this.number = number;
         this.category = category;
         this.content = content;
