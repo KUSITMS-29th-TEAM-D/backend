@@ -19,19 +19,23 @@ public class DiscoverPersonaChatting extends BaseEntity {
     @Column(name = "question_number", nullable = false)
     private int questionNumber;
 
-    @Column(name = "answer")
+    @Column(name = "question", columnDefinition = "TEXT")
+    private String question;
+
+    @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;
 
-    @Column(name = "reaction")
+    @Column(name = "reaction", columnDefinition = "TEXT")
     private String reaction;
 
-    @Column(name = "summary")
+    @Column(name = "summary", columnDefinition = "TEXT")
     private String summary;
 
     @Builder
-    public DiscoverPersonaChatting(DiscoverPersona discoverPersona, int questionNumber, String answer, String reaction, String summary) {
+    public DiscoverPersonaChatting(DiscoverPersona discoverPersona, int questionNumber, String question, String answer, String reaction, String summary) {
         this.discoverPersona = discoverPersona;
         this.questionNumber = questionNumber;
+        this.question = question;
         this.answer = answer;
         this.reaction = reaction;
         this.summary = summary;

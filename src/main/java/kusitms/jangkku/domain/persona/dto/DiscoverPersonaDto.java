@@ -111,17 +111,35 @@ public class DiscoverPersonaDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class SummaryResponse {
-        private List<String> health;
-        private List<String> career;
-        private List<String> love;
-        private List<String> leisure;
+        private List<QnA> health;
+        private List<QnA> career;
+        private List<QnA> love;
+        private List<QnA> leisure;
 
-        public static DiscoverPersonaDto.SummaryResponse of(List<String> healthSummaries, List<String> careerSummaries, List<String> loveSummaries, List<String> leisureSummaries) {
+        public static DiscoverPersonaDto.SummaryResponse of(List<QnA> healthSummaries, List<QnA> careerSummaries, List<QnA> loveSummaries, List<QnA> leisureSummaries) {
             return SummaryResponse.builder()
                     .health(healthSummaries)
                     .career(careerSummaries)
                     .love(loveSummaries)
                     .leisure(leisureSummaries)
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class QnA {
+        private String question;
+        private String answer;
+
+        public static DiscoverPersonaDto.QnA of(DiscoverPersonaChatting discoverPersonaChatting) {
+            return QnA.builder()
+                    .question(discoverPersonaChatting.getQuestion())
+                    .answer(discoverPersonaChatting.getSummary())
                     .build();
         }
     }
