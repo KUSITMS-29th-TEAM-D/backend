@@ -2,6 +2,7 @@ package kusitms.jangkku.domain.persona.application;
 
 import jakarta.transaction.Transactional;
 import kusitms.jangkku.domain.clova.application.ClovaService;
+import kusitms.jangkku.domain.persona.constant.Conversation;
 import kusitms.jangkku.domain.persona.constant.Question;
 import kusitms.jangkku.domain.persona.dao.DiscoverPersonaChattingRepository;
 import kusitms.jangkku.domain.persona.dao.DiscoverPersonaKeywordRepository;
@@ -59,11 +60,12 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
             discoverPersona.updateComplete(true); // 완료 처리
             discoverPersonaRepository.save(discoverPersona);
         }
-        String newQuestionContent = getQuestionContent(category, newQuestionNumber);
+        String newQuestionContent = getConversation(category, newQuestionNumber);
 
         DiscoverPersonaChatting newDiscoverPersonaChatting = DiscoverPersonaChatting.builder()
                 .discoverPersona(discoverPersona)
                 .questionNumber(newQuestionNumber)
+                .question(getQuestion(category, newQuestionNumber))
                 .build();
         discoverPersonaChattingRepository.save(newDiscoverPersonaChatting);
 
@@ -84,7 +86,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         // 마지막 대화인 경우 마무리 멘트 추가
         if (discoverPersona.getIsComplete()) {
             String category = discoverPersona.getCategory();
-            String finalComment = getQuestionContent(category, 0);
+            String finalComment = getConversation(category, 0);
             reaction += finalComment;
         }
         String summary = clovaService.createDiscoverPersonaSummary(answerRequest.getAnswer());
@@ -142,10 +144,10 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         DiscoverPersona loveDiscoverPersona = getDiscoverPersona(user, "사랑");
         DiscoverPersona leisureDiscoverPersona = getDiscoverPersona(user, "여가");
 
-        List<String> healthSummaries = createSummaries(healthDiscoverPersona);
-        List<String> careerSummaries = createSummaries(careerDiscoverPersona);
-        List<String> loveSummaries = createSummaries(loveDiscoverPersona);
-        List<String> leisureSummaries = createSummaries(leisureDiscoverPersona);
+        List<DiscoverPersonaDto.QnA> healthSummaries = createSummaries(healthDiscoverPersona);
+        List<DiscoverPersonaDto.QnA> careerSummaries = createSummaries(careerDiscoverPersona);
+        List<DiscoverPersonaDto.QnA> loveSummaries = createSummaries(loveDiscoverPersona);
+        List<DiscoverPersonaDto.QnA> leisureSummaries = createSummaries(leisureDiscoverPersona);
 
         return DiscoverPersonaDto.SummaryResponse.of(healthSummaries, careerSummaries, loveSummaries, leisureSummaries);
     }
@@ -257,8 +259,19 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
         return randomQuestionNumber;
     } */
 
+    // Enum에서 대화 내용을 가져오는 메서드
+    private String getConversation(String category, int number) {
+        for (Conversation conversation : Conversation.values()) {
+            if (conversation.getCategory().equals(category) && conversation.getNumber() == number) {
+                return conversation.getContent();
+            }
+        }
+
+        throw new PersonaException(PersonaErrorResult.NOT_FOUND_QUESTION);
+    }
+
     // Enum에서 질문 내용을 가져오는 메서드
-    private String getQuestionContent(String category, int number) {
+    private String getQuestion(String category, int number) {
         for (Question question : Question.values()) {
             if (question.getCategory().equals(category) && question.getNumber() == number) {
                 return question.getContent();
@@ -272,18 +285,18 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
     private List<String> createStageQuestions(String category, List<DiscoverPersonaChatting> chattings) {
         List<String> stageQuestions = new ArrayList<>();
         for (DiscoverPersonaChatting discoverPersonaChatting : chattings) {
-            stageQuestions.add(getQuestionContent(category, discoverPersonaChatting.getQuestionNumber()));
+            stageQuestions.add(getConversation(category, discoverPersonaChatting.getQuestionNumber()));
         }
 
         return stageQuestions;
     }
 
     // 답변 요약 목록을 반환하는 메서드
-    protected List<String> createSummaries(DiscoverPersona discoverPersona) {
+    protected List<DiscoverPersonaDto.QnA> createSummaries(DiscoverPersona discoverPersona) {
         List<DiscoverPersonaChatting> chattings = discoverPersonaChattingRepository.findAllByDiscoverPersonaOrderByCreatedDateAsc(discoverPersona);
-        List<String> summaries = new ArrayList<>();
+        List<DiscoverPersonaDto.QnA> summaries = new ArrayList<>();
         for (DiscoverPersonaChatting discoverPersonaChatting : chattings) {
-            summaries.add(discoverPersonaChatting.getSummary());
+            summaries.add(DiscoverPersonaDto.QnA.of(discoverPersonaChatting));
         }
 
         return summaries;
