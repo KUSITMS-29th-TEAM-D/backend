@@ -22,6 +22,8 @@ import kusitms.jangkku.domain.user.dao.UserInterestRepository;
 import kusitms.jangkku.domain.user.domain.UserInterest;
 import kusitms.jangkku.domain.user.dao.UserKeywordRepository;
 import kusitms.jangkku.domain.user.domain.UserKeyword;
+import kusitms.jangkku.domain.user.exception.UserErrorResult;
+import kusitms.jangkku.domain.user.exception.UserException;
 import kusitms.jangkku.global.util.CookieUtil;
 import kusitms.jangkku.global.util.JwtUtil;
 import kusitms.jangkku.global.util.S3Util;
@@ -67,6 +69,10 @@ public class UserServiceImpl implements UserService {
         String provider = jwtUtil.getProviderFromToken(registerToken);
         String providerId = jwtUtil.getProviderIdFromToken(registerToken);
         String name = jwtUtil.getNameFromToken(registerToken);
+
+        if (userRegisterRequest.getNickname().length() > 20) {
+            throw new UserException(UserErrorResult.NICKNAME_TOO_LONG);
+        }
 
         log.info("유저 등록을 진행합니다.");
 
