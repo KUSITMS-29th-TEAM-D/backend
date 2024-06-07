@@ -101,7 +101,7 @@ public class DiscoverPersonaServiceImpl implements DiscoverPersonaService {
             createPersonaKeywords(discoverPersona);
         }
 
-        return DiscoverPersonaDto.AnswerResponse.of(reaction, summary);
+        return DiscoverPersonaDto.AnswerResponse.of(discoverPersonaChatting.getQuestion(), reaction, summary);
     }
 
     // 카테고리별 채팅 내역을 반환하는 메서드

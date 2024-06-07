@@ -53,11 +53,13 @@ public class DiscoverPersonaDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class AnswerResponse {
+        private String question;
         private String reaction;
         private String summary;
 
-        public static DiscoverPersonaDto.AnswerResponse of(String reaction, String summary) {
-            return DiscoverPersonaDto.AnswerResponse.builder()
+        public static DiscoverPersonaDto.AnswerResponse of(String question, String reaction, String summary) {
+            return AnswerResponse.builder()
+                    .question(question)
                     .reaction(reaction)
                     .summary(summary)
                     .build();
