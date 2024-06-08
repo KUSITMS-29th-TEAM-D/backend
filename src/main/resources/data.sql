@@ -65,3 +65,5 @@ INSERT INTO keywords (keywords_id, name) VALUES
                                              (16, '소극적인'),
                                              (17, '외부 영향을 많이 받는')
 ON DUPLICATE KEY UPDATE keywords_id = VALUES(keywords_id);
+
+ALTER TABLE discover_personas_chattings MODIFY COLUMN answer TEXT;

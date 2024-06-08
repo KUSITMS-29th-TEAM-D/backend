@@ -1,7 +1,7 @@
 package kusitms.jangkku.domain.program.dao;
 
 import io.lettuce.core.dynamic.annotation.Param;
-import kusitms.jangkku.domain.program.domain.Branding;
+import kusitms.jangkku.domain.program.domain.model.Branding;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

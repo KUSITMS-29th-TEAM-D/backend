@@ -1,8 +1,7 @@
 package kusitms.jangkku.domain.keyword.domain;
 
 import jakarta.persistence.*;
-import kusitms.jangkku.domain.program.domain.ProgramsImageKeyword;
-import kusitms.jangkku.global.common.dao.BaseEntity;
+import kusitms.jangkku.domain.program.domain.model.ProgramsImageKeyword;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

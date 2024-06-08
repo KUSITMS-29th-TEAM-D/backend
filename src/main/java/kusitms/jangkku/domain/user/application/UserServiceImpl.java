@@ -8,7 +8,7 @@ import kusitms.jangkku.domain.interest.domain.Interest;
 import kusitms.jangkku.domain.keyword.dao.KeywordRepository;
 import kusitms.jangkku.domain.keyword.domain.Keyword;
 import kusitms.jangkku.domain.program.dao.ProgramParticipantsRepository;
-import kusitms.jangkku.domain.program.domain.ProgramParticipants;
+import kusitms.jangkku.domain.program.domain.model.ProgramParticipants;
 import kusitms.jangkku.domain.program.exception.ProgramErrorResult;
 import kusitms.jangkku.domain.program.exception.ProgramException;
 import kusitms.jangkku.domain.token.dao.RefreshTokenRepository;

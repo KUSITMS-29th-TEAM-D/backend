@@ -1,4 +1,4 @@
-package kusitms.jangkku.domain.program.domain;
+package kusitms.jangkku.domain.program.domain.model;
 
 import jakarta.persistence.*;
 import kusitms.jangkku.domain.interest.domain.Interest;

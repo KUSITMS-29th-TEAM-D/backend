@@ -1,7 +1,7 @@
-package kusitms.jangkku.domain.persona.dao;
+package kusitms.jangkku.domain.persona.domain.dao;
 
-import kusitms.jangkku.domain.persona.domain.DiscoverPersona;
-import kusitms.jangkku.domain.persona.domain.DiscoverPersonaChatting;
+import kusitms.jangkku.domain.persona.domain.model.DiscoverPersona;
+import kusitms.jangkku.domain.persona.domain.model.DiscoverPersonaChatting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

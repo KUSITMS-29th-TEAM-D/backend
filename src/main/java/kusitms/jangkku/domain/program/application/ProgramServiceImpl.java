@@ -4,9 +4,10 @@ import kusitms.jangkku.domain.program.constant.FORM;
 import kusitms.jangkku.domain.program.dao.BrandingRepository;
 import kusitms.jangkku.domain.program.dao.ProgramParticipantsRepository;
 import kusitms.jangkku.domain.program.dao.SelfUnderstandingsRepository;
-import kusitms.jangkku.domain.program.domain.Branding;
-import kusitms.jangkku.domain.program.domain.ProgramParticipants;
-import kusitms.jangkku.domain.program.domain.SelfUnderstanding;
+import kusitms.jangkku.domain.program.domain.ProgramAdapter;
+import kusitms.jangkku.domain.program.domain.model.Branding;
+import kusitms.jangkku.domain.program.domain.model.ProgramParticipants;
+import kusitms.jangkku.domain.program.domain.model.SelfUnderstanding;
 import kusitms.jangkku.domain.program.dto.ProgramDetailDto;
 import kusitms.jangkku.domain.program.dto.ProgramDto;
 import kusitms.jangkku.domain.program.dto.ProgramsHomeDto;
@@ -40,6 +41,7 @@ public class ProgramServiceImpl implements ProgramService {
     private final UserInterestRepository userInterestRepository;
     private final UserRepository userRepository;
     private final ProgramParticipantsRepository programParticipantsRepository;
+    private final ProgramAdapter programAdapter;
 
     @Override
     public List<ProgramDto.ProgramsMainResponseDto> getMainSelfUnderstanding() {
@@ -77,8 +79,8 @@ public class ProgramServiceImpl implements ProgramService {
             participants = findSelfUnderstandingById(programId).getProgramParticipants().size();
             return ProgramDetailDto.ProgramDetailResponseDto.of(findSelfUnderStandingById(programId), findAllUserKeyword(user), participants, isApply);
         } else if (type.equals("branding")) {
-            participants = findBrandingById(programId).getProgramParticipants().size();
-            return ProgramDetailDto.ProgramDetailResponseDto.of(findBrandingById(programId), participants, isApply);
+            participants = programAdapter.findById(programId).getProgramParticipants().size();
+            return ProgramDetailDto.ProgramDetailResponseDto.of(programAdapter.findById(programId), participants, isApply);
         } else throw new ProgramException(NOT_FOUND_PROGRAM);
     }
 
@@ -111,7 +113,7 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         if (programsType.equals("branding")) {
-            programParticipantsRepository.save(ProgramParticipants.toEntity(user, findBrandingById(programId)));
+            programParticipantsRepository.save(ProgramParticipants.toEntity(user, programAdapter.findById(programId)));
         } else if (programsType.equals("self-understanding")) {
             programParticipantsRepository.save(ProgramParticipants.toEntity(user, findSelfUnderstandingById(programId)));
         } else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
@@ -119,7 +121,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     private boolean verifyCanApplyPrograms(User user, String programsType, Long programId) {
         if (programsType.equals("branding")) {
-            return programParticipantsRepository.existsByUserAndBranding(user, findBrandingById(programId));
+            return programParticipantsRepository.existsByUserAndBranding(user, programAdapter.findById(programId));
         } else if (programsType.equals("self-understanding")) {
             return programParticipantsRepository.existsByUserAndSelfUnderstanding(user, findSelfUnderstandingById(programId));
         } else throw new ProgramException(PROGRAM_ENUM_NOT_FOUND);
@@ -168,10 +170,6 @@ public class ProgramServiceImpl implements ProgramService {
 
     private SelfUnderstanding findSelfUnderStandingById(Long id) {
         return selfUnderstandingsRepository.findById(id).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
-    }
-
-    private Branding findBrandingById(Long id) {
-        return brandingRepository.findById(id).orElseThrow(() -> new ProgramException(NOT_FOUND_PROGRAM));
     }
 
     private List<SelfUnderstanding> findAllSelfUnderstanding() {

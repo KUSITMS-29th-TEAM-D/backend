@@ -1,7 +1,7 @@
 package kusitms.jangkku.domain.user.domain;
 
 import jakarta.persistence.*;
-import kusitms.jangkku.domain.program.domain.ProgramParticipants;
+import kusitms.jangkku.domain.program.domain.model.ProgramParticipants;
 import kusitms.jangkku.global.common.dao.BaseEntity;
 import lombok.*;
 

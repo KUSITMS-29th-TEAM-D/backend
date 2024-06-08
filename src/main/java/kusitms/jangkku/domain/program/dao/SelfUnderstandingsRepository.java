@@ -2,7 +2,7 @@ package kusitms.jangkku.domain.program.dao;
 
 import io.lettuce.core.dynamic.annotation.Param;
 import kusitms.jangkku.domain.program.constant.FORM;
-import kusitms.jangkku.domain.program.domain.SelfUnderstanding;
+import kusitms.jangkku.domain.program.domain.model.SelfUnderstanding;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

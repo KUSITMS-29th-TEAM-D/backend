@@ -1,4 +1,4 @@
-package kusitms.jangkku.domain.persona.domain;
+package kusitms.jangkku.domain.persona.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
